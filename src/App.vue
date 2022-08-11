@@ -146,18 +146,19 @@
   <text id="graph-div-error">ERROR: This message will disappear when the graph div is resized appropriately.</text>
 </template>
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
 
-var x : string = 5;
-const dataPanel = reactive();
+const dataPanel = ref({});
+dataPanel.value['labels'] = [];
+dataPanel.value['objType'] = '';
 export default defineComponent({
   name: "GraphView",
   components: {
 
   },
   data() {
-    dataPanel
+    return {dataPanel}
   }
 });
 </script>
