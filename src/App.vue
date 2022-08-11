@@ -78,7 +78,7 @@
     <div id="twig-main-nav" class="navbar-menu">
       <div class="navbar-start">
         <div class="navbar-item">
-          <a href="#" onclick="document.home()">Explore</a>
+          <a href="#">Explore</a>
         </div>
       </div>
       <div class="navbar-end">
@@ -101,7 +101,7 @@
   <div class="info-panel-outer">
     <div class="info-panel-inner">
       <div v-if="dataPanel.labels" v-bind:id="dataPanel.id" class="info-panel-inner-details-id">
-        <h3>{{ dataPanel.objType }} Properties</h3>
+        <h3>Properties</h3>
         <ul>
           <li v-for="(label, index) in dataPanel.labels" :key="index" contenteditable="true" v-on:blur="onInputLabel">
             {{ label }}</li>
@@ -132,33 +132,25 @@
     </div>
   </div>
 
-  <div class="command-panel">
-    Click on a command to replay it
-    <div class="command-list">
-      <ul>
-        <li v-for="(command, index) in commandPanel" :key="index"
-            onclick="document.getElementById('query-textarea').value=this.innerText" class="command">
-          {{ command }}
-        </li>
-      </ul>
-    </div>
-  </div>
-  <text id="graph-div-error">ERROR: This message will disappear when the graph div is resized appropriately.</text>
 </template>
 <script>
 import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
+import graphData from './graphData'
 
-const dataPanel = ref({});
-dataPanel.value['labels'] = [];
-dataPanel.value['objType'] = '';
+const dataPanel = {};
+const nodes = graphData.nodes
+const edges = graphData.edges
+const configs = graphData.configs
+const layouts = graphData.layouts
+const d3ForceEnabled = graphData.d3ForceEnabled
 export default defineComponent({
   name: "GraphView",
   components: {
 
   },
   data() {
-    return {dataPanel}
+    return {dataPanel, nodes, edges, configs, layouts, d3ForceEnabled }
   }
 });
 </script>
@@ -174,12 +166,12 @@ export default defineComponent({
   color: #2c3e50;
   background-color: aqua;
   margin: 0px;
-  height: 1000px;
-  /* will be set inside js */
   overflow: hidden;
   position: fixed;
   z-index: -1;
   /* visibility: hidden; */
+  width: 100%;
+  height: 100%;
 }
 
 .control-panel {
