@@ -31,10 +31,10 @@ const layouts = ref<Layouts>({
 const nextNodeIndex = ref(Object.keys(nodes).length + 1)
 const nextEdgeIndex = ref(Object.keys(edges).length + 1)
 
-const selectedNodes = ref([]);
-const selectedEdges = ref([]);
+const selectedNodes = ref<Nodes>();
+const selectedEdges = ref<Edges>();
 
-var configs : vNG.Config = vNG.defineConfigs({
+var configs = vNG.defineConfigs({
   view: {
     scalingObjects: true,
     minZoomLevel: 0.1,
@@ -100,13 +100,6 @@ const eventHandlers: vNG.EventHandlers = {
   // wildcard: capture all events
   "*": (type, event) => {
     console.log(type, event)
-    // if (eventLogs.length > EVENTS_COUNT) {
-    //   eventLogs.splice(EVENTS_COUNT, eventLogs.length - EVENTS_COUNT)
-    // }
-    // if (event instanceof Object && "event" in event) {
-    //   Object.assign(event, { event: "(...)" })
-    // }
-    // eventLogs.unshift([type, JSON.stringify(event)])
     // if (type == 'view:click') {
     //   document.viewClick(event.event);
     // } else if (type == 'node:click') {
@@ -128,5 +121,9 @@ const eventHandlers: vNG.EventHandlers = {
   },
 }
 export default {
-  nodes, edges, layouts, configs, d3ForceEnabled
+  nodes, edges, 
+  layouts, d3ForceEnabled,
+  configs,
+  selectedNodes, selectedEdges, 
+  eventHandlers
 }

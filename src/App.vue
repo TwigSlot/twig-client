@@ -1,7 +1,7 @@
 <template>
   <div id="graph">
     <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
-                     v-model:zoom-level="zoomLevel" :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs"
+                     :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs"
                      :event-handlers="eventHandlers" />
   </div>
 
@@ -133,24 +133,28 @@
   </div>
 
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
 import graphData from './graphData'
 
 const dataPanel = {};
+const graph = graphData.graph
 const nodes = graphData.nodes
 const edges = graphData.edges
 const configs = graphData.configs
 const layouts = graphData.layouts
+const selectedNodes = graphData.selectedNodes
+const selectedEdges = graphData.selectedEdges
 const d3ForceEnabled = graphData.d3ForceEnabled
+const eventHandlers = graphData.eventHandlers
 export default defineComponent({
   name: "GraphView",
   components: {
 
   },
   data() {
-    return {dataPanel, nodes, edges, configs, layouts, d3ForceEnabled }
+    return { dataPanel, graph, nodes, edges, configs, layouts, d3ForceEnabled, selectedNodes, selectedEdges, eventHandlers }
   }
 });
 </script>
