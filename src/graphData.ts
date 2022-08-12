@@ -1,4 +1,4 @@
-import { reactive, ref, computed } from "vue"
+import { reactive, ref, computed, VNodeRef } from "vue"
 import * as vNG from "v-network-graph"
 import { Nodes, Edges, Layouts } from "v-network-graph"
 import {
@@ -16,7 +16,7 @@ var original_edges: Edges = {
   edge2: { source: "node2", target: "node3" },
   edge3: { source: "node3", target: "node4" },
 }
-const graph = ref();
+const graph = ref<VNodeRef>();
 const nodes = reactive({ ...original_nodes })
 const edges = reactive({ ...original_edges })
 const layouts = ref<Layouts>({
@@ -27,9 +27,6 @@ const layouts = ref<Layouts>({
     node4: { x: 150, y: 50 },
   },
 });
-
-const nextNodeIndex = ref(Object.keys(nodes).length + 1)
-const nextEdgeIndex = ref(Object.keys(edges).length + 1)
 
 const selectedNodes = ref<Nodes>();
 const selectedEdges = ref<Edges>();
@@ -121,6 +118,7 @@ const eventHandlers: vNG.EventHandlers = {
   },
 }
 export default {
+  graph,
   nodes, edges, 
   layouts, d3ForceEnabled,
   configs,

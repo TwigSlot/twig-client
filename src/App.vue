@@ -1,8 +1,8 @@
 <template>
   <div id="graph">
-    <v-network-graph ref="graph" v-model:selected-nodes="selectedNodes" v-model:selected-edges="selectedEdges"
-                     :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs"
-                     :event-handlers="eventHandlers" />
+    <v-network-graph ref="graph" v-model:selected-nodes="graphData.selectedNodes" v-model:selected-edges="graphData.selectedEdges"
+                     :nodes="graphData.nodes" :edges="graphData.edges" :layouts="graphData.layouts" :configs="graphData.configs"
+                     :event-handlers="graphData.eventHandlers" />
   </div>
 
   <div id="login-form-modal" class="modal">
@@ -15,21 +15,18 @@
       <section class="modal-card-body">
         <form>
           <div class="row">
-            <label class="label" for="server-url">Username/Email:</label>
+            <label class="label" for="login-username">Username/Email</label>
             <div class="control">
-              <input class="input" type="text" id="server-url" value="" />
+              <input class="input" type="text" id="login-username" value="" />
             </div>
           </div>
 
           <div class="row">
-            <label class="label" for="server-password">Password</label>
+            <label class="label" for="login-password">Password</label>
             <div class="control">
-              <input class="input" type="password" id="server-password" value=""/>
+              <input class="input" type="password" id="login-password" value=""/>
             </div>
           </div>
-
-            <!-- TODO login with google -->
-
         </form>
       </section>
       <footer class="modal-card-foot">
@@ -51,7 +48,7 @@
       <section class="modal-card-body">
         <form>
           <label class="checkbox">
-            <input type="checkbox" id="d3-force-enabled" v-model="d3ForceEnabled" />
+            <input type="checkbox" id="d3-force-enabled" v-model="graphData.d3ForceEnabled" />
             Auto-organise
           </label>
         </form>
@@ -136,25 +133,25 @@
 <script lang="ts">
 import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
-import graphData from './graphData'
+import graphData from "./graphData"
 
 const dataPanel = {};
-const graph = graphData.graph
-const nodes = graphData.nodes
-const edges = graphData.edges
-const configs = graphData.configs
-const layouts = graphData.layouts
-const selectedNodes = graphData.selectedNodes
-const selectedEdges = graphData.selectedEdges
-const d3ForceEnabled = graphData.d3ForceEnabled
-const eventHandlers = graphData.eventHandlers
+// const graph = graphData.graph
+// const nodes = graphData.nodes
+// const edges = graphData.edges
+// const configs = graphData.configs
+// const layouts = graphData.layouts
+// const selectedNodes = graphData.selectedNodes
+// const selectedEdges = graphData.selectedEdges
+// const d3ForceEnabled = graphData.d3ForceEnabled
+// const eventHandlers = graphData.eventHandlers
 export default defineComponent({
   name: "GraphView",
   components: {
 
   },
   data() {
-    return { dataPanel, graph, nodes, edges, configs, layouts, d3ForceEnabled, selectedNodes, selectedEdges, eventHandlers }
+    return { dataPanel, graphData }
   }
 });
 </script>
