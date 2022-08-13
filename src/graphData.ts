@@ -97,24 +97,6 @@ const eventHandlers: vNG.EventHandlers = {
   // wildcard: capture all events
   "*": (type, event) => {
     console.log(type, event)
-    // if (type == 'view:click') {
-    //   document.viewClick(event.event);
-    // } else if (type == 'node:click') {
-    //   document.nodeClick(event);
-    // } else if (type == 'node:select') {
-    //   document.nodeSelect(event);
-    // } else if (type == 'node:pointerover') {
-    //   const obj = nodes[event.node]
-    //   updateDataPanel(obj.objInfo, obj)
-    // } else if (type == 'node:pointerout') {
-    //   // console.log('i')
-    // } else if (type == 'edge:pointerover') {
-    //   const obj = edges[event.edge]
-    //   updateDataPanel(obj.objInfo, obj)
-    // } else if (type == 'edge:select') {
-    //   document.edgeSelect(event)
-    //   // console.log(type, event)
-    // }
   },
 }
 export default {
