@@ -1,8 +1,8 @@
 <template>
   <div id="graph">
-    <v-network-graph ref="graph" v-model:selected-nodes="graphData.selectedNodes" v-model:selected-edges="graphData.selectedEdges"
-                     :nodes="graphData.nodes" :edges="graphData.edges" :layouts="graphData.layouts" :configs="graphData.configs"
-                     :event-handlers="graphData.eventHandlers" />
+    <v-network-graph ref="graph" v-model:selected-nodes="graphData.selectedNodes"
+      v-model:selected-edges="graphData.selectedEdges" :nodes="graphData.nodes" :edges="graphData.edges"
+      :layouts="graphData.layouts" :configs="graphData.configs" :event-handlers="graphData.eventHandlers" />
   </div>
 
   <div id="login-form-modal" class="modal">
@@ -24,7 +24,7 @@
           <div class="row">
             <label class="label" for="login-password">Password</label>
             <div class="control">
-              <input class="input" type="password" id="login-password" value=""/>
+              <input class="input" type="password" id="login-password" value="" />
             </div>
           </div>
         </form>
@@ -61,9 +61,9 @@
     </div>
   </div>
 
-  <nav class="navbar" id="control-panel" >
+  <nav class="navbar" id="control-panel">
     <div class="navbar-brand">
-      <a class="navbar-item" href="#" >
+      <a class="navbar-item" href="#">
         TWIGSLOT
       </a>
       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="twig-main-nav">
@@ -130,12 +130,61 @@
   </div>
 
 </template>
+<!-- <script lang="ts">
+// document.addEventListener('DOMContentLoaded', () => {
+//   // Functions to open and close a modal
+//   function openModal($el : any) {
+//     $el.classList.add('is-active');
+//   }
+
+//   function closeModal($el : any) {
+//     $el.classList.remove('is-active');
+//   }
+
+//   function closeAllModals() {
+//     (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+//       closeModal($modal);
+//     });
+//   }
+
+//   // Add a click event on buttons to open a specific modal
+//   (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger : any) => {
+//     const modal = $trigger.dataset.target;
+//     const $target = document.getElementById(modal);
+
+//     $trigger.addEventListener('click', () => {
+//       openModal($target);
+//     });
+//   });
+
+//   // Add a click event on various child elements to close the parent modal
+//   (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+//     const $target = $close.closest('.modal');
+
+//     $close.addEventListener('click', () => {
+//       closeModal($target);
+//     });
+//   });
+
+//   // Add a keyboard event to close all modals
+//   document.addEventListener('keydown', (event) => {
+//     const e = event || window.event;
+
+//     if (e.keyCode === 27) { // Escape key
+//       closeAllModals();
+//     }
+//   });
+// });
+
+
+</script> -->
 <script lang="ts">
+
 import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
 import graphData from "./graphData"
 
-const dataPanel = {};
+var dataPanel: Map<string, any> = new Map<string, any>();
 // const graph = graphData.graph
 // const nodes = graphData.nodes
 // const edges = graphData.edges
@@ -152,6 +201,60 @@ export default defineComponent({
   },
   data() {
     return { dataPanel, graphData }
+  },
+  methods: {
+    keyDown: function () {
+      console.log("hello there")
+    },
+
+    modalEvent: function () {
+      // Functions to open and close a modal
+      function openModal($el: any) {
+        $el.classList.add('is-active');
+      }
+
+      function closeModal($el: any) {
+        $el.classList.remove('is-active');
+      }
+
+      function closeAllModals() {
+        (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+          closeModal($modal);
+        });
+      }
+
+      // Add a click event on buttons to open a specific modal
+      (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger: any) => {
+        const modal = $trigger.dataset.target;
+        const $target = document.getElementById(modal);
+
+        $trigger.addEventListener('click', () => {
+          openModal($target);
+        });
+      });
+
+      // Add a click event on various child elements to close the parent modal
+      (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+        const $target = $close.closest('.modal');
+
+        $close.addEventListener('click', () => {
+          closeModal($target);
+        });
+      });
+
+      // Add a keyboard event to close all modals
+      document.addEventListener('keydown', (event) => {
+        const e = event || window.event;
+
+        if (e.keyCode === 27) { // Escape key
+          closeAllModals();
+        }
+      });
+    }
+  },
+  created: function () {
+    window.addEventListener('keydown', this.keyDown)
+    document.addEventListener("DOMContentLoaded", this.modalEvent)
   }
 });
 </script>
