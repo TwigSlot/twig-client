@@ -183,6 +183,8 @@
 import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
 import graphData from "./graphData"
+import sdk from './login'
+sdk.initializeSelfServiceLoginFlowForBrowsers()
 
 var dataPanel: Map<string, any> = new Map<string, any>();
 // const graph = graphData.graph
