@@ -82,10 +82,13 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <button class="button is-info js-modal-trigger" data-target="login-form-modal">
-              Login
-            </button>
+            <a v-if="!session" :href="basePath + '/ui/login'"> Login</a>
+            <!-- <a v-if="session" :href="basePath + '/ui'"> Logout</a> -->
+            <a v-if="session" :href="basePath + '/ui/settings'"> Settings</a>
           </div>
+        </div>
+        <div v-if="session" class="navbar-item">
+          welcome back <code>session</code>
         </div>
 
         <div class="navbar-item">
@@ -101,9 +104,11 @@
       <div v-if="dataPanel.get('labels')" v-bind:id="dataPanel.get('id')" class="info-panel-inner-details-id">
         <h3>Properties</h3>
         <ul>
-          <li v-for="(label, index) in dataPanel.get('labels')" :key="index" contenteditable="true" v-on:blur="onInputLabel">
+          <li v-for="(label, index) in dataPanel.get('labels')" :key="index" contenteditable="true"
+            v-on:blur="onInputLabel">
             {{ label }}</li>
-          <li v-if="dataPanel.get('objType') == 'Node'"><input type='button' value='Add Label' onclick='document.addLabel()' />
+          <li v-if="dataPanel.get('objType') == 'Node'"><input type='button' value='Add Label'
+              onclick='document.addLabel()' />
           </li>
         </ul>
         <table>
@@ -123,7 +128,8 @@
           <tr><input type="button" value="Add Property" onclick="document.addProperty()" /></tr>
         </table>
       </div>
-      <div v-else-if="dataPanel.get('objType')">Creating {{ dataPanel.get('objType') }} in Neo4J... Hover over node again later to
+      <div v-else-if="dataPanel.get('objType')">Creating {{ dataPanel.get('objType') }} in Neo4J... Hover over node
+        again later to
         check
       </div>
       <div v-else>Hover over a node/edge to check it out</div>
@@ -181,10 +187,16 @@
 </script> -->
 <script lang="ts">
 
+import { Configuration } from '@ory/client';
 import { defineComponent, ref, reactive } from 'vue'
-import neo4j, { session } from 'neo4j-driver'
 import graphData from "./graphData"
-import sdk from './login'
+import login from './login'
+
+const sdk = login.sdk;
+const basePath = login.basePath;
+
+var session : any = null;
+var logoutUrl : string = '';
 
 var dataPanel = reactive(new Map<string, any>());
 dataPanel.set('labels', [])
@@ -206,7 +218,12 @@ export default defineComponent({
 
   },
   data() {
-    return { dataPanel, graphData }
+    return {  dataPanel, 
+              graphData, 
+              session, 
+              basePath,
+              logoutUrl
+    }
   },
   methods: {
     login: function(){
@@ -281,6 +298,14 @@ export default defineComponent({
   created: function () {
     window.addEventListener('keydown', this.keyDown)
     document.addEventListener("DOMContentLoaded", this.modalEvent)
+  },
+  mounted() {
+    sdk.toSession(undefined, document.cookie).then(({data}) => {
+      // this.session = data
+      // sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({data})=>{
+      //   this.logoutUrl = data.logout_url
+      // })
+    })
   }
 });
 </script>
