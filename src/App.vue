@@ -32,7 +32,8 @@
       <footer class="modal-card-foot">
         <div class="container">
           <button class="button is-danger is-pulled-left">Cancel</button>
-          <button class="button is-primary is-pulled-right" type="button" onclick="document.connect()">Connect</button>
+          <button class="button is-primary" type="button" @click='sign_up'>Sign Up</button>
+          <button class="button is-primary is-pulled-right" type="button" @click='login'>Login</button>
         </div>
       </footer>
     </div>
@@ -97,21 +98,21 @@
   </nav>
   <div class="info-panel-outer">
     <div class="info-panel-inner">
-      <div v-if="dataPanel.labels" v-bind:id="dataPanel.id" class="info-panel-inner-details-id">
+      <div v-if="dataPanel.get('labels')" v-bind:id="dataPanel.get('id')" class="info-panel-inner-details-id">
         <h3>Properties</h3>
         <ul>
-          <li v-for="(label, index) in dataPanel.labels" :key="index" contenteditable="true" v-on:blur="onInputLabel">
+          <li v-for="(label, index) in dataPanel.get('labels')" :key="index" contenteditable="true" v-on:blur="onInputLabel">
             {{ label }}</li>
-          <li v-if="dataPanel.objType == 'Node'"><input type='button' value='Add Label' onclick='document.addLabel()' />
+          <li v-if="dataPanel.get('objType') == 'Node'"><input type='button' value='Add Label' onclick='document.addLabel()' />
           </li>
         </ul>
         <table>
           <tr>
             <th>&lt;id&gt;</th>
-            <th>{{ dataPanel.id }}</th>
+            <th>{{ dataPanel.get('id') }}</th>
           </tr>
           <!-- <p>{{dataPanel.properties}}</p> -->
-          <tr v-for="(value, property) in dataPanel.properties" :key="value">
+          <tr v-for="(value, property) in dataPanel.get('properties')" :key="value">
             <th contenteditable="true" v-on:blur="onInputPropertyName">
               {{ property }}
             </th>
@@ -122,7 +123,7 @@
           <tr><input type="button" value="Add Property" onclick="document.addProperty()" /></tr>
         </table>
       </div>
-      <div v-else-if="dataPanel.objType">Creating {{ dataPanel.objType }} in Neo4J... Hover over node again later to
+      <div v-else-if="dataPanel.get('objType')">Creating {{ dataPanel.get('objType') }} in Neo4J... Hover over node again later to
         check
       </div>
       <div v-else>Hover over a node/edge to check it out</div>
@@ -184,9 +185,12 @@ import { defineComponent, ref, reactive } from 'vue'
 import neo4j, { session } from 'neo4j-driver'
 import graphData from "./graphData"
 import sdk from './login'
-sdk.initializeSelfServiceLoginFlowForBrowsers()
 
-var dataPanel: Map<string, any> = new Map<string, any>();
+var dataPanel = reactive(new Map<string, any>());
+dataPanel.set('labels', [])
+dataPanel.set('id', '123')
+dataPanel.set('properties', [])
+dataPanel.set('objType', [])
 // const graph = graphData.graph
 // const nodes = graphData.nodes
 // const edges = graphData.edges
@@ -205,10 +209,30 @@ export default defineComponent({
     return { dataPanel, graphData }
   },
   methods: {
+    login: function(){
+      console.log("login")
+    },
+    sign_up: function(){
+      console.log(sdk)
+      sdk.initializeSelfServiceRegistrationFlowForBrowsers().then(
+        (res) => {
+          console.log(res)
+        }
+      )
+    },
     keyDown: function () {
       console.log("hello there")
     },
+    onInputPropertyName : function() {
 
+    },
+    onInputPropertyValue : function() {
+
+    },
+    onInputLabel : function (){
+
+    },
+   
     modalEvent: function () {
       // Functions to open and close a modal
       function openModal($el: any) {
