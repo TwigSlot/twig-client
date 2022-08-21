@@ -88,7 +88,7 @@
           </div>
         </div>
         <div v-if="session" class="navbar-item">
-          welcome back <code>session</code>
+          welcome back <code>toSession()</code>
         </div>
 
         <div class="navbar-item">
@@ -299,12 +299,12 @@ export default defineComponent({
     window.addEventListener('keydown', this.keyDown)
     document.addEventListener("DOMContentLoaded", this.modalEvent)
   },
-  mounted() {
-    sdk.toSession(undefined, document.cookie).then(({data}) => {
-      // this.session = data
-      // sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({data})=>{
-      //   this.logoutUrl = data.logout_url
-      // })
+  mounted() {   
+    sdk.toSession().then(({data}) => {
+      this.session = data
+      sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({data})=>{
+        this.logoutUrl = data.logout_url
+      })
     })
   }
 });
