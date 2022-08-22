@@ -9,4 +9,4 @@ let sdk: V0alpha2Api = new V0alpha2Api(
         }
     })
 )
-export default {sdk, basePath}
+export default {sdk, kratosBasePath: basePath}

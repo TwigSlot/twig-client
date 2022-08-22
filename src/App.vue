@@ -5,40 +5,6 @@
       :layouts="graphData.layouts" :configs="graphData.configs" :event-handlers="graphData.eventHandlers" />
   </div>
 
-  <div id="login-form-modal" class="modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Authenticate to Neo4j</p>
-        <button class="delete" aria-label="close"></button>
-      </header>
-      <section class="modal-card-body">
-        <form>
-          <div class="row">
-            <label class="label" for="login-username">Username/Email</label>
-            <div class="control">
-              <input class="input" type="text" id="login-username" value="" />
-            </div>
-          </div>
-
-          <div class="row">
-            <label class="label" for="login-password">Password</label>
-            <div class="control">
-              <input class="input" type="password" id="login-password" value="" />
-            </div>
-          </div>
-        </form>
-      </section>
-      <footer class="modal-card-foot">
-        <div class="container">
-          <button class="button is-danger is-pulled-left">Cancel</button>
-          <button class="button is-primary" type="button" @click='sign_up'>Sign Up</button>
-          <button class="button is-primary is-pulled-right" type="button" @click='login'>Login</button>
-        </div>
-      </footer>
-    </div>
-
-  </div>
   <div id="config-modal" class="modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -62,43 +28,8 @@
     </div>
   </div>
 
-  <nav class="navbar" id="control-panel">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="#">
-        TWIGSLOT
-      </a>
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="twig-main-nav">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
 
-    <div id="twig-main-nav" class="navbar-menu">
-      <div class="navbar-start">
-        <div class="navbar-item">
-          <a href="#">Explore</a>
-        </div>
-      </div>
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <a v-if="!session" :href="basePath + '/ui/login'"> Login</a>
-            <!-- <a v-if="session" :href="basePath + '/ui'"> Logout</a> -->
-            <a v-if="session" :href="basePath + '/ui/settings'"> Settings</a>
-          </div>
-        </div>
-        <div v-if="session" class="navbar-item">
-          welcome back <code>toSession()</code>
-        </div>
-
-        <div class="navbar-item">
-          <a href="https://github.com/twigslot/twig-client" target="_blank">
-            <font-awesome-icon icon="fa-brands fa-github"></font-awesome-icon>
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <Navbar></Navbar>
   <div class="info-panel-outer">
     <div class="info-panel-inner">
       <div v-if="dataPanel.get('labels')" v-bind:id="dataPanel.get('id')" class="info-panel-inner-details-id">
@@ -137,66 +68,12 @@
   </div>
 
 </template>
-<!-- <script lang="ts">
-// document.addEventListener('DOMContentLoaded', () => {
-//   // Functions to open and close a modal
-//   function openModal($el : any) {
-//     $el.classList.add('is-active');
-//   }
 
-//   function closeModal($el : any) {
-//     $el.classList.remove('is-active');
-//   }
-
-//   function closeAllModals() {
-//     (document.querySelectorAll('.modal') || []).forEach(($modal) => {
-//       closeModal($modal);
-//     });
-//   }
-
-//   // Add a click event on buttons to open a specific modal
-//   (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger : any) => {
-//     const modal = $trigger.dataset.target;
-//     const $target = document.getElementById(modal);
-
-//     $trigger.addEventListener('click', () => {
-//       openModal($target);
-//     });
-//   });
-
-//   // Add a click event on various child elements to close the parent modal
-//   (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-//     const $target = $close.closest('.modal');
-
-//     $close.addEventListener('click', () => {
-//       closeModal($target);
-//     });
-//   });
-
-//   // Add a keyboard event to close all modals
-//   document.addEventListener('keydown', (event) => {
-//     const e = event || window.event;
-
-//     if (e.keyCode === 27) { // Escape key
-//       closeAllModals();
-//     }
-//   });
-// });
-
-
-</script> -->
 <script lang="ts">
 
-import { Configuration } from '@ory/client';
 import { defineComponent, ref, reactive } from 'vue'
 import graphData from "./graphData"
-import login from './login'
-
-const sdk = login.sdk;
-const basePath = login.basePath;
-
-var session : any = null;
-var logoutUrl : string = '';
+import Navbar from './components/Navbar.vue';
 
 var dataPanel = reactive(new Map<string, any>());
 dataPanel.set('labels', [])
@@ -213,30 +90,16 @@ dataPanel.set('objType', [])
 // const d3ForceEnabled = graphData.d3ForceEnabled
 // const eventHandlers = graphData.eventHandlers
 export default defineComponent({
-  name: "GraphView",
+  name: "App",
   components: {
-
+    Navbar
   },
   data() {
     return {  dataPanel, 
               graphData, 
-              session, 
-              basePath,
-              logoutUrl
     }
   },
   methods: {
-    login: function(){
-      console.log("login")
-    },
-    sign_up: function(){
-      console.log(sdk)
-      sdk.initializeSelfServiceRegistrationFlowForBrowsers().then(
-        (res) => {
-          console.log(res)
-        }
-      )
-    },
     keyDown: function () {
       console.log("hello there")
     },
@@ -299,14 +162,7 @@ export default defineComponent({
     window.addEventListener('keydown', this.keyDown)
     document.addEventListener("DOMContentLoaded", this.modalEvent)
   },
-  mounted() {   
-    sdk.toSession().then(({data}) => {
-      this.session = data
-      sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({data})=>{
-        this.logoutUrl = data.logout_url
-      })
-    })
-  }
+  
 });
 </script>
 
