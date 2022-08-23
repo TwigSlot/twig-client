@@ -15,13 +15,14 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: "ProjectList",
+    props: [ 'showcased_projects' ],
     data(){
         return {
-            showcased_projects: [
-                { uid:1, title: "hello", description: "desc1", authors: ["meow", "tch"] },
-                { uid:2, title: "bye", description: "desc1", authors: ["meow", "tch"] },
-                { uid:3, title: "hi", description: "desc1", authors: ["meow", "tch"] },
-            ]
+            // showcased_projects: [
+            //     { uid:1, title: "hello", description: "desc1", authors: ["meow", "tch"] },
+            //     { uid:2, title: "bye", description: "desc1", authors: ["meow", "tch"] },
+            //     { uid:3, title: "hi", description: "desc1", authors: ["meow", "tch"] },
+            // ]
         }
     }
 })

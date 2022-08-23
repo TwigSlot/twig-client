@@ -3,7 +3,7 @@
     <h1>{{ user.name }}</h1>
     <h1>{{ user.username }}</h1>
     <h1>{{ user.email }}</h1>
-    <ProjectList></ProjectList>
+    <ProjectList :showcased_projects='showcased_projects'></ProjectList>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
@@ -23,7 +23,12 @@ export default defineComponent({
     data(){
         return {
             profile_picture_src: default_profile_picture,
-            user
+            user,
+            showcased_projects: [
+                { uid:1, title: "hello", description: "desc1", authors: ["meow", "tch"] },
+                { uid:2, title: "bye", description: "desc1", authors: ["meow", "tch"] },
+                { uid:3, title: "hi", description: "desc1", authors: ["meow", "tch"] },
+            ]
         }
     }
 })

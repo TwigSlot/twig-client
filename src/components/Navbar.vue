@@ -29,7 +29,8 @@
               <a :href="logoutUrl">Logout</a>
             </div>
             <div v-if="session" class="navbar-item">
-              <a :href="kratosBasePath + '/ui/settings'">Settings</a>
+              <a target="_blank" :href="kratosBasePath + '/ui/settings'">Settings</a>
+              <!-- <router-link :to="{ path: `/settings/${session.identity.id}` }">Settings</router-link> -->
             </div>
             <div v-if="session" class="navbar-item">
               <router-link :to="{ path: `/user/${session.identity.id}` }">Profile</router-link>
@@ -53,24 +54,24 @@ const kratosBasePath = login.kratosBasePath;
 const flaskBasePath = "http://localhost:5000"
 
 const sdk = login.sdk;
-var session : any = null;
-var logoutUrl : string = '';
+var session: any = null;
+var logoutUrl: string = '';
 
 
 export default defineComponent({
-    name: "Navbar",
-    components:{
+  name: "Navbar",
+  components: {
 
-    },
-    data(){
-        return {
-            session, flaskBasePath, kratosBasePath, logoutUrl
-        }
-    },
-    mounted() {   
-    sdk.toSession().then(({data}) => {
+  },
+  data() {
+    return {
+      session, flaskBasePath, kratosBasePath, logoutUrl
+    }
+  },
+  mounted() {
+    sdk.toSession().then(({ data }) => {
       this.session = data
-      sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({data})=>{
+      sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url
       })
     })
