@@ -1,3 +1,4 @@
 <template>
-this is home truly
+this is home truly, <br>
+beautiful home page
 </template>
