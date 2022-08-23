@@ -1,6 +1,6 @@
 import { reactive, ref, computed, VNodeRef } from "vue"
 import * as vNG from "v-network-graph"
-import { Nodes, Edges, Layouts } from "v-network-graph"
+import { Nodes, Edges, Layouts, LayoutHandler } from "v-network-graph"
 import {
   ForceLayout,
 } from "v-network-graph/lib/force-layout"
@@ -30,6 +30,7 @@ const layouts = ref<Layouts>({
 
 const selectedNodes = ref<Nodes>();
 const selectedEdges = ref<Edges>();
+const default_layout_handler: LayoutHandler = new ForceLayout({ positionFixedByClickWithAltKey: true, })
 
 var configs = vNG.defineConfigs({
   view: {
@@ -45,7 +46,7 @@ var configs = vNG.defineConfigs({
         strokeDasharray: "0",
       },
     },
-    layoutHandler: new ForceLayout({ positionFixedByClickWithAltKey: true, })
+    layoutHandler: default_layout_handler 
   },
   node: {
     selectable: true,
