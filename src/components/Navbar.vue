@@ -32,7 +32,7 @@
               <a :href="kratosBasePath + '/ui/settings'">Settings</a>
             </div>
             <div v-if="session" class="navbar-item">
-              <a :href="flaskBasePath + '/user/'+session.identity.id">Profile</a>
+              <router-link :to="{ path: `/user/${session.identity.id}` }">Profile</router-link>
             </div>
           </div>
         </div>
