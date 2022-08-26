@@ -17,8 +17,8 @@ var original_edges: Edges = {
   edge3: { source: "node3", target: "node4" },
 }
 const graph = ref<VNodeRef>();
-const nodes = reactive({ ...original_nodes })
-const edges = reactive({ ...original_edges })
+const nodes : any = ref({ original_nodes })
+const edges : any = ref({ original_edges })
 const layouts = ref<Layouts>({
   nodes: {
     node1: { x: 0, y: 0 },

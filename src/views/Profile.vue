@@ -3,7 +3,7 @@
     <h1>{{ user.name }}</h1>
     <h1>{{ user.username }}</h1>
     <h1>{{ user.email }}</h1>
-    <ProjectList :showcased_projects='showcased_projects'></ProjectList>
+    <ProjectList></ProjectList>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';

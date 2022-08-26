@@ -16,7 +16,6 @@ import { defineComponent, ref } from 'vue';
 
 const showcased_projects : any = ref([]);
 function get_projects(){
-    console.log(import.meta.env)
     axios
         .get(import.meta.env.VITE_API_URL + '/user/tch1001')
         .then(response => {

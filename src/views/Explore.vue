@@ -1,5 +1,5 @@
 <template>
-    <ProjectList :showcased_projects='showcased_projects'></ProjectList>
+    <ProjectList></ProjectList>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
