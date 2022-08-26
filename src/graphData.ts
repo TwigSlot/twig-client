@@ -94,17 +94,11 @@ const d3ForceEnabled = computed({
 
 const EVENTS_COUNT = 6
 
-const eventHandlers: vNG.EventHandlers = {
-  // wildcard: capture all events
-  "*": (type, event) => {
-    console.log(type, event)
-  },
-}
-export default {
+const graphData = {
   graph,
   nodes, edges, 
   layouts, d3ForceEnabled,
   configs,
-  selectedNodes, selectedEdges, 
-  eventHandlers
+  selectedNodes, selectedEdges
 }
+export default graphData
