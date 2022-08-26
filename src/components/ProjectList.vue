@@ -1,9 +1,9 @@
 <template>
-    <div v-for="project in showcased_projects">
+    <div v-for="(project, project_idx) in showcased_projects" :key="project_idx">
         <router-link :to="{ path: `/project/${project.uid}` }">
-            <h2>{{ project.title }}</h2>
+            <h2>{{ project.name }}</h2>
             <h2>{{ project.description }}</h2>
-            <ul v-for="author in project.authors">
+            <ul v-for="(author, author_idx) in project.authors" :key="author_idx">
                 <li>{{ author }}</li>
             </ul>
         </router-link>
@@ -11,19 +11,32 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import axios from 'axios';
+import { defineComponent, ref } from 'vue';
 
+const showcased_projects : any = ref([]);
+function get_projects(){
+    console.log(import.meta.env)
+    axios
+        .get(import.meta.env.VITE_API_URL + '/user/tch1001')
+        .then(response => {
+            showcased_projects.value = response.data
+        })
+}
 export default defineComponent({
     name: "ProjectList",
-    props: [ 'showcased_projects' ],
     data(){
         return {
+            showcased_projects
             // showcased_projects: [
-            //     { uid:1, title: "hello", description: "desc1", authors: ["meow", "tch"] },
-            //     { uid:2, title: "bye", description: "desc1", authors: ["meow", "tch"] },
-            //     { uid:3, title: "hi", description: "desc1", authors: ["meow", "tch"] },
+            //     { uid:1, name: "hello", description: "desc1", authors: ["meow", "tch"] },
+            //     { uid:2, name: "bye", description: "desc1", authors: ["meow", "tch"] },
+            //     { uid:3, name: "hi", description: "desc1", authors: ["meow", "tch"] },
             // ]
         }
+    }, 
+    mounted(){
+        get_projects()
     }
 })
 </script>

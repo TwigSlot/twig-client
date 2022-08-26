@@ -13,7 +13,7 @@
     <div id="twig-main-nav" class="navbar-menu">
       <div class="navbar-start">
         <div class="navbar-item">
-          <a href="/explore">Explore</a>
+          <router-link :to="{path:'/explore'}">Explore</router-link>
         </div>
       </div>
       <div class="navbar-end">

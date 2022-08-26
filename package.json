@@ -18,6 +18,7 @@
     "@ory/kratos-client": "^0.10.1",
     "bulma": "^0.9.4",
     "neo4j-driver": "^4.4.7",
+    "serve": "^14.0.1",
     "v-network-graph": "^0.6.5",
     "vue": "^3.2.37",
     "vue-router": "^4.1.3"
