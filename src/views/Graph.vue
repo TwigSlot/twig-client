@@ -32,6 +32,16 @@ function delete_node(node: any){
             delete graphData.layouts.value.nodes[node]
         })
 }
+function delete_edge(edge: any){
+    const request_url = `${import.meta.env.VITE_API_URL}`+
+                    `/project/${project_id.value}`+
+                    `/relationship/${edge}`+
+                    `/delete`
+    axios.post(request_url)
+        .then(response => {
+            delete graphData.edges.value[edge]
+        })
+}
 function add_node(raw: any) {
     graphData.nodes.value[`node${raw.uid}`] = raw
 }
@@ -45,6 +55,7 @@ function add_edge(s: string, t: string, uid: any){
 }
 var edge_source_node : any = null;
 var selected_nodes = ref([]);
+var selected_edges = ref([]);
 function create_edge(s: any, t: any){
     const request_url = `${import.meta.env.VITE_API_URL}`+
                     `/project/${project_id.value}`+
@@ -112,6 +123,8 @@ export default defineComponent({
                         this.handle_node_select(event)
                     } else if(type == 'node:click'){
                         this.handle_node_click(event)
+                    } else if(type == 'edge:select'){
+                        this.handle_edge_select(event)
                     }
                 },
             }
@@ -158,6 +171,9 @@ export default defineComponent({
             }
             selected_nodes.value = event
         },
+        handle_edge_select: function(event: any){
+            selected_edges.value = event
+        },
         home: function () {
             const inf = 10000000000000000;
             var minX = inf, minY = inf, maxX = -inf, maxY = -inf;
@@ -200,13 +216,17 @@ export default defineComponent({
             }else if(e.key == 'd'){
                 (this.$refs.control_panel_ref as any).selected_mode = 'delete'
             }else if(e.key == 'Backspace' || e.key == 'Delete'){
-                for(const node of selected_nodes.value){
-                    if(confirm(`Delete ${selected_nodes.value.length} nodes?`)){
-                        delete_node(node)
+                if(selected_nodes.value.length > 0 && confirm(`Delete ${selected_nodes.value.length} nodes?`)){
+                    for(const node of selected_nodes.value){
+                            delete_node(node)
+                    }
+                }
+                if (selected_edges.value.length > 0 &&confirm(`Delete ${selected_edges.value.length} edges?`)) {
+                    for (const edge of selected_edges.value) {
+                        delete_edge(edge)
                     }
                 }
             }
-            console.log(e.key)
         },
         pauseKeyDown: function() { pause_key_down = true; },
         resumeKeyDown: function() { pause_key_down = false; }
