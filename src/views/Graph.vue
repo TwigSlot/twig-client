@@ -242,6 +242,6 @@ export default defineComponent({
         // there won't be a flicker from the old graph data
         graphData.nodes.value = {}
         graphData.edges.value = {}
-    },
+    }
 })
 </script>

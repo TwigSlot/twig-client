@@ -5,17 +5,8 @@ import {
   ForceLayout,
 } from "v-network-graph/lib/force-layout"
 
-const original_nodes: Nodes = {
-  node1: { name: "Node 1" },
-  node2: { name: "Node 2" },
-  node3: { name: "Node 3" },
-  node4: { name: "Node 4" },
-}
-var original_edges: Edges = {
-  edge1: { source: "node1", target: "node2" },
-  edge2: { source: "node2", target: "node3" },
-  edge3: { source: "node3", target: "node4" },
-}
+const original_nodes: Nodes = {}
+var original_edges: Edges = {}
 const nodes : any = ref({ original_nodes })
 const edges : any = ref({ original_edges })
 const layouts = ref<Layouts>({
