@@ -16,15 +16,10 @@ var original_edges: Edges = {
   edge2: { source: "node2", target: "node3" },
   edge3: { source: "node3", target: "node4" },
 }
-const graph = ref<VNodeRef>();
 const nodes : any = ref({ original_nodes })
 const edges : any = ref({ original_edges })
 const layouts = ref<Layouts>({
   nodes: {
-    node1: { x: 0, y: 0 },
-    node2: { x: 50, y: 50 },
-    node3: { x: 100, y: 0 },
-    node4: { x: 150, y: 50 },
   },
 });
 
@@ -95,7 +90,6 @@ const d3ForceEnabled = computed({
 const EVENTS_COUNT = 6
 
 const graphData = {
-  graph,
   nodes, edges, 
   layouts, d3ForceEnabled,
   configs,
