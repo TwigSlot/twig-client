@@ -21,6 +21,17 @@ const graph_ref: any = ref();
 const control_panel_ref: any = ref();
 var pause_key_down: boolean = false;
 
+function delete_node(node: any){
+    const request_url = `${import.meta.env.VITE_API_URL}`+
+                    `/project/${project_id.value}`+
+                    `/resource/${node.substring(4)}`+
+                    `/delete`
+    axios.post(request_url)
+        .then(response => {
+            delete graphData.nodes.value[node]
+            delete graphData.layouts.value.nodes[node]
+        })
+}
 function add_node(raw: any) {
     graphData.nodes.value[`node${raw.uid}`] = raw
 }
@@ -188,6 +199,12 @@ export default defineComponent({
                 (this.$refs.control_panel_ref as any).selected_mode = 'move'
             }else if(e.key == 'd'){
                 (this.$refs.control_panel_ref as any).selected_mode = 'delete'
+            }else if(e.key == 'Backspace' || e.key == 'Delete'){
+                for(const node of selected_nodes.value){
+                    if(confirm(`Delete ${selected_nodes.value.length} nodes?`)){
+                        delete_node(node)
+                    }
+                }
             }
             console.log(e.key)
         },
