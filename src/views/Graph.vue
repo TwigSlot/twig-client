@@ -31,14 +31,15 @@ function add_edge(raw: any) {
     }
 }
 function get_items() {
+    const request_url = import.meta.env.VITE_API_URL + `/project/${project_id.value}`
     axios
-        .get(import.meta.env.VITE_API_URL + `/project/${project_id.value}`)
+        .get(request_url)
         .then(response => {
             graphData.nodes.value = {}
             graphData.edges.value = {}
             console.log(response.data)
             var edge_queue: Array<Object> = []
-            for (const item of response.data) {
+            for (const item of response.data.items) {
                 if (item instanceof Array) {
                     // only propagate edge info afer all node info has been done
                     // this is because edge info depends on node_uid_name_mapping 
@@ -70,11 +71,11 @@ export default defineComponent({
                     if (type == 'node:pointerover') {
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'view:click') {
-                        const query_url = `${import.meta.env.VITE_API_URL}` +
+                        const request_url = `${import.meta.env.VITE_API_URL}` +
                             `/project/${project_id.value}` +
                             `/new?item=node`
                         axios
-                            .post(query_url)
+                            .post(request_url)
                             .then(response => {
                                 this.add_node_with_mouse(response.data, event.event)
                             })

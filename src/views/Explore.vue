@@ -12,11 +12,6 @@ export default defineComponent({
     },
     data(){
         return {
-            showcased_projects: [
-                { uid:1, title: "hello", description: "desc1", authors: ["meow", "tch"] },
-                { uid:2, title: "bye", description: "desc1", authors: ["meow", "tch"] },
-                { uid:3, title: "hi", description: "desc1", authors: ["meow", "tch"] },
-            ]
         }
     }
 })

@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Graph from '../views/Graph.vue'
 import Explore from '../views/Explore.vue'
 import Profile from '../views/Profile.vue'
+import EditProject from '../views/EditProject.vue'
 
 const routes = [
     {
@@ -20,6 +21,11 @@ const routes = [
         name: "Graph",
         component: Graph
     },
+    {
+        path: '/project-edit/:id',
+        name: 'EditProject',
+        component: EditProject
+    },  
     {
         path: '/user/:id', // note id could be the kratos_user_id or username
         name: "Profile",

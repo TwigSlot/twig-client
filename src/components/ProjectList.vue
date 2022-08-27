@@ -1,4 +1,5 @@
 <template>
+    <button @click="add_project">Add</button>
     <div v-for="(project, project_idx) in showcased_projects" :key="project_idx">
         <router-link :to="{ path: `/project/${project.uid}` }">
             <h2>{{ project.name }}</h2>
@@ -7,6 +8,7 @@
                 <li>{{ author }}</li>
             </ul>
         </router-link>
+        <router-link :to="{ name: 'EditProject', params: {id: project.uid }}">edit</router-link><br>
         <br>
     </div>
 </template>
@@ -14,28 +16,41 @@
 import axios from 'axios';
 import { defineComponent, ref } from 'vue';
 
-const showcased_projects : any = ref([]);
-function get_projects(){
-    axios
-        .get(import.meta.env.VITE_API_URL + '/user/tch1001')
-        .then(response => {
-            showcased_projects.value = response.data
-        })
-}
+const kratos_user_id = ref("")
+const username = ref("")
+const showcased_projects: any = ref([]);
+
 export default defineComponent({
     name: "ProjectList",
-    data(){
+    data() {
         return {
-            showcased_projects
-            // showcased_projects: [
-            //     { uid:1, name: "hello", description: "desc1", authors: ["meow", "tch"] },
-            //     { uid:2, name: "bye", description: "desc1", authors: ["meow", "tch"] },
-            //     { uid:3, name: "hi", description: "desc1", authors: ["meow", "tch"] },
-            // ]
+            showcased_projects,
+            kratos_user_id,
+            username
         }
-    }, 
-    mounted(){
-        get_projects()
+    },
+    methods: {
+        add_project: function () {
+            const request_url = `${import.meta.env.VITE_API_URL}/project/new` +
+                `?user=${kratos_user_id.value}`
+            axios.put(request_url)
+                .then(response => {
+                    console.log(response.data)
+                })
+        },
+        get_projects: function () {
+            const request_url = import.meta.env.VITE_API_URL + '/user/tch1001'
+            axios
+                .get(request_url)
+                .then(response => {
+                    showcased_projects.value = response.data.projects
+                    kratos_user_id.value = response.data.user.kratos_user_id
+                    username.value = response.data.user.username
+                })
+        }
+    },
+    mounted() {
+        this.get_projects()
     }
 })
 </script>
