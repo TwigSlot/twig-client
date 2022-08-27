@@ -1,6 +1,6 @@
 <template>
     <div class="control-panel">
-        <button @click="this.$emit('home')">Home</button>
+        <button @click="$emit('home')">Home</button>
         <select v-model="selected_mode" class="flush-right">
             <option value="add-node">Add Vertex (V)</option>
             <option value="add-edge">Add Edge (E)</option>
@@ -23,7 +23,11 @@ export default defineComponent({
         
     },
     mounted(){
-
+        // this is put here to avoid TypeErrors caused by
+        // html loading the following code before control_panel_ref is mounted
+        document.addEventListener('keydown', (e) => {
+            this.$emit('customkeydown', e)
+        })
     }
 })
 </script>

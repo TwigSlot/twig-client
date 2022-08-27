@@ -1,8 +1,8 @@
 <template>
     <div class="info-panel-outer">
         <text>he {{data_panel.uid}}</text><br>
-        <input :value="data_panel.name" @blur="handleBlur('name', $event)"/><br>
-        <input :value="data_panel.description" @blur="handleBlur('description', $event)"/>
+        <input :value="data_panel.name" @focus="pauseKeyDown" @blur="handleBlur('name', $event)"/><br>
+        <input :value="data_panel.description" @focus="pauseKeyDown" @blur="handleBlur('description', $event)"/>
         <h2>Resources</h2>
         <button>Add</button>
         <div class="info-panel-inner">
@@ -27,6 +27,7 @@ export default defineComponent({
     },
     methods: {
         handleBlur: function(property: string ,e: any) {
+            this.$emit('resumeKeyDown')
             const new_value = e.target.value
             const resource_id = (this.$props.data_panel.uid)
             const request_url = `${import.meta.env.VITE_API_URL}`+
@@ -51,7 +52,8 @@ export default defineComponent({
         },
         onInputLabel: function () {
 
-        }
+        },
+        pauseKeyDown: function () { this.$emit('pauseKeyDown') }
     }
 })
 </script>
