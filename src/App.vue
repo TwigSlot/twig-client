@@ -18,10 +18,6 @@ export default defineComponent({
     return { graphData }
   },
   methods: {
-    keyDown: function () {
-      console.log("hello there")
-    },
-
     modalEvent: function () {
       // Functions to open and close a modal
       function openModal($el: any) {
@@ -68,7 +64,6 @@ export default defineComponent({
     }
   },
   created: function () {
-    window.addEventListener('keydown', this.keyDown)
     document.addEventListener("DOMContentLoaded", this.modalEvent)
   },
   

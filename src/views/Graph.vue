@@ -1,5 +1,5 @@
 <template>
-    <div id="graph">
+    <div id="graph" ref="div_ref">
         <v-network-graph ref="graph_ref" v-model:selected-nodes="graphData.selectedNodes"
             v-model:selected-edges="graphData.selectedEdges" :nodes="graphData.nodes"
             :edges="graphData.edges" :layouts="graphData.layouts"
@@ -32,6 +32,7 @@ function add_edge(s: string, t: string, uid: any){
     }
 }
 var edge_source_node : any = null;
+var selected_nodes = ref([]);
 function create_edge(s: string, t: string){
     console.log(s.substring(4))
     console.log(t.substring(4))
@@ -130,6 +131,8 @@ export default defineComponent({
                     create_edge(edge_source_node, event.node)
                     this.$refs.control_panel_ref.selected_mode = 'move'
                 }
+            }else{
+                edge_source_node = event.node
             }
         },
         handle_node_select: function(event: any){
@@ -143,6 +146,7 @@ export default defineComponent({
                     this.$refs.control_panel_ref.selected_mode = 'move'
                 } 
             }
+            selected_nodes.value = event
         },
         home: function () {
             const inf = 10000000000000000;
@@ -175,7 +179,21 @@ export default defineComponent({
     mounted() {
         project_id.value = this.$route.params.id
         get_items()
-        console.log('refs', this.$refs)
+        document.addEventListener('keydown', (e: any) => {
+            if(e.key == 'e'){
+                this.$refs.control_panel_ref.selected_mode = 'add-edge'
+                if(selected_nodes.value.length == 2){
+                    create_edge(selected_nodes.value[0], selected_nodes.value[1])
+                    this.$refs.control_panel_ref.selected_mode = 'move'
+                }
+            }else if(e.key == 'v'){
+                this.$refs.control_panel_ref.selected_mode = 'add-node'
+            }else if(e.key == 'a'){
+                this.$refs.control_panel_ref.selected_mode = 'move'
+            }else if(e.key == 'd'){
+                this.$refs.control_panel_ref.selected_mode = 'delete'
+            }
+        })
     },
     beforeUnmount() {
         // so that the next time we open the graph,

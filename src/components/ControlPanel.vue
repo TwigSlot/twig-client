@@ -4,7 +4,7 @@
         <select v-model="selected_mode" class="flush-right">
             <option value="add-node">Add Vertex (V)</option>
             <option value="add-edge">Add Edge (E)</option>
-            <option value="delete-node">Delete Vertex (D)</option>
+            <option value="delete">Delete (D)</option>
             <option value="move">Look Around (A)</option>
         </select>
     </div>
@@ -16,7 +16,7 @@ export default defineComponent({
     name: "ControlPanel",
     data(){
         return {
-            selected_mode: 'add-edge'
+            selected_mode: 'move'
         }
     },
     methods:{
