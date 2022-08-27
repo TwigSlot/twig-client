@@ -1,12 +1,14 @@
 <template>
-    <div id="graph" ref="div_ref" >
+    <div id="graph" ref="div_ref">
         <v-network-graph ref="graph_ref" v-model:selected-nodes="graphData.selectedNodes"
             v-model:selected-edges="graphData.selectedEdges" :nodes="graphData.nodes"
             :edges="graphData.edges" :layouts="graphData.layouts"
             :configs="graphData.configs" :event-handlers="eventHandlers" />
     </div>
-    <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown" :data_panel="dataPanel"></DataPanelVue>
-    <ControlPanelVue @home="home" @customkeydown="keydown" ref="control_panel_ref"></ControlPanelVue>
+    <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
+        :data_panel="dataPanel"></DataPanelVue>
+    <ControlPanelVue @home="home" @customkeydown="keydown" ref="control_panel_ref">
+    </ControlPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
@@ -21,22 +23,22 @@ const graph_ref: any = ref();
 const control_panel_ref: any = ref();
 var pause_key_down: boolean = false;
 
-function delete_node(node: any){
-    const request_url = `${import.meta.env.VITE_API_URL}`+
-                    `/project/${project_id.value}`+
-                    `/resource/${node.substring(4)}`+
-                    `/delete`
+function delete_node(node: any) {
+    const request_url = `${import.meta.env.VITE_API_URL}` +
+        `/project/${project_id.value}` +
+        `/resource/${node.substring(4)}` +
+        `/delete`
     axios.post(request_url)
         .then(response => {
             delete graphData.nodes.value[node]
             delete graphData.layouts.value.nodes[node]
         })
 }
-function delete_edge(edge: any){
-    const request_url = `${import.meta.env.VITE_API_URL}`+
-                    `/project/${project_id.value}`+
-                    `/relationship/${edge}`+
-                    `/delete`
+function delete_edge(edge: any) {
+    const request_url = `${import.meta.env.VITE_API_URL}` +
+        `/project/${project_id.value}` +
+        `/relationship/${edge}` +
+        `/delete`
     axios.post(request_url)
         .then(response => {
             delete graphData.edges.value[edge]
@@ -45,7 +47,7 @@ function delete_edge(edge: any){
 function add_node(raw: any) {
     graphData.nodes.value[`node${raw.uid}`] = raw
 }
-function add_edge(s: string, t: string, uid: any){
+function add_edge(s: string, t: string, uid: any) {
     graphData.edges.value[uid] =
     {
         source: s,
@@ -53,14 +55,14 @@ function add_edge(s: string, t: string, uid: any){
         uid: uid
     }
 }
-var edge_source_node : any = null;
+var edge_source_node: any = null;
 var selected_nodes = ref([]);
 var selected_edges = ref([]);
-function create_edge(s: any, t: any){
-    const request_url = `${import.meta.env.VITE_API_URL}`+
-                    `/project/${project_id.value}`+
-                    `/new?item=relationship`+
-                    `&a_id=${s.substring(4)}&b_id=${t.substring(4)}`
+function create_edge(s: any, t: any) {
+    const request_url = `${import.meta.env.VITE_API_URL}` +
+        `/project/${project_id.value}` +
+        `/new?item=relationship` +
+        `&a_id=${s.substring(4)}&b_id=${t.substring(4)}`
     axios.post(request_url)
         .then(response => {
             graphData.edges.value[response.data.uid] = {
@@ -119,11 +121,11 @@ export default defineComponent({
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'view:click') {
                         this.handle_view_click(event)
-                    } else if (type == 'node:select'){
+                    } else if (type == 'node:select') {
                         this.handle_node_select(event)
-                    } else if(type == 'node:click'){
+                    } else if (type == 'node:click') {
                         this.handle_node_click(event)
-                    } else if(type == 'edge:select'){
+                    } else if (type == 'edge:select') {
                         this.handle_edge_select(event)
                     }
                 },
@@ -132,7 +134,7 @@ export default defineComponent({
     },
     methods: {
         handle_view_click: function (event: any) {
-            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode 
+            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
             if (selected_mode == 'add-node') {
                 const request_url = `${import.meta.env.VITE_API_URL}` +
                     `/project/${project_id.value}` +
@@ -143,35 +145,35 @@ export default defineComponent({
                         this.add_node_with_mouse(response.data, event.event);
                     });
                 (this.$refs.control_panel_ref as any).selected_mode = 'move'
-            }else if(selected_mode == 'add-edge'){
+            } else if (selected_mode == 'add-edge') {
                 edge_source_node = null;
             }
         },
-        handle_node_click: function(event: any){
-            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode 
-            if(selected_mode == 'add-edge'){
-                if(edge_source_node){
+        handle_node_click: function (event: any) {
+            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
+            if (selected_mode == 'add-edge') {
+                if (edge_source_node) {
                     create_edge(edge_source_node, event.node);
                     (this.$refs.control_panel_ref as any).selected_mode = 'move'
                 }
-            }else{
+            } else {
                 edge_source_node = event.node
             }
         },
-        handle_node_select: function(event: any){
+        handle_node_select: function (event: any) {
             const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
-            if(selected_mode == 'add-edge'){
-                if(event.length == 0) edge_source_node = null;
-                else if(event.length == 1){
+            if (selected_mode == 'add-edge') {
+                if (event.length == 0) edge_source_node = null;
+                else if (event.length == 1) {
                     edge_source_node = event[0]
-                }else if(event.length == 2){
+                } else if (event.length == 2) {
                     create_edge(event[0], event[1]);
                     (this.$refs.control_panel_ref as any).selected_mode = 'move'
-                } 
+                }
             }
             selected_nodes.value = event
         },
-        handle_edge_select: function(event: any){
+        handle_edge_select: function (event: any) {
             selected_edges.value = event
         },
         home: function () {
@@ -202,34 +204,34 @@ export default defineComponent({
             add_node(raw)
         },
         keydown: function (e: any) {
-            if(pause_key_down) return;
-            if(e.key == 'e'){
+            if (pause_key_down) return;
+            if (e.key == 'e') {
                 (this.$refs.control_panel_ref as any).selected_mode = 'add-edge'
-                if(selected_nodes.value.length == 2){
+                if (selected_nodes.value.length == 2) {
                     create_edge(selected_nodes.value[0], selected_nodes.value[1]);
                     (this.$refs.control_panel_ref as any).selected_mode = 'move'
                 }
-            }else if(e.key == 'v'){
+            } else if (e.key == 'v') {
                 (this.$refs.control_panel_ref as any).selected_mode = 'add-node'
-            }else if(e.key == 'a'){
+            } else if (e.key == 'a') {
                 (this.$refs.control_panel_ref as any).selected_mode = 'move'
-            }else if(e.key == 'd'){
+            } else if (e.key == 'd') {
                 (this.$refs.control_panel_ref as any).selected_mode = 'delete'
-            }else if(e.key == 'Backspace' || e.key == 'Delete'){
-                if(selected_nodes.value.length > 0 && confirm(`Delete ${selected_nodes.value.length} nodes?`)){
-                    for(const node of selected_nodes.value){
-                            delete_node(node)
+            } else if (e.key == 'Backspace' || e.key == 'Delete') {
+                if (selected_nodes.value.length > 0 && confirm(`Delete ${selected_nodes.value.length} nodes?`)) {
+                    for (const node of selected_nodes.value) {
+                        delete_node(node)
                     }
                 }
-                if (selected_edges.value.length > 0 &&confirm(`Delete ${selected_edges.value.length} edges?`)) {
+                if (selected_edges.value.length > 0 && confirm(`Delete ${selected_edges.value.length} edges?`)) {
                     for (const edge of selected_edges.value) {
                         delete_edge(edge)
                     }
                 }
             }
         },
-        pauseKeyDown: function() { pause_key_down = true; },
-        resumeKeyDown: function() { pause_key_down = false; }
+        pauseKeyDown: function () { pause_key_down = true; },
+        resumeKeyDown: function () { pause_key_down = false; }
     },
     mounted() {
         project_id.value = this.$route.params.id

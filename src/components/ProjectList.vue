@@ -9,6 +9,7 @@
             </ul>
         </router-link>
         <router-link :to="{ name: 'EditProject', params: {id: project.uid }}">edit</router-link><br>
+        <button @click="delete_project(project.uid)">delete</button>
         <br>
     </div>
 </template>
@@ -35,7 +36,17 @@ export default defineComponent({
                 `?user=${kratos_user_id.value}`
             axios.put(request_url)
                 .then(response => {
-                    console.log(response.data)
+                    showcased_projects.value.unshift(response.data)
+                })
+        },
+        delete_project: function(project_id: any){
+            console.log(project_id)
+            const request_url = `${import.meta.env.VITE_API_URL}`+
+                                `/project/${project_id}`+
+                                `/delete`
+            axios.post(request_url)
+                .then(response => {
+                    showcased_projects.value = showcased_projects.value.filter((ele: any) => ele.uid != project_id)
                 })
         },
         get_projects: function () {
