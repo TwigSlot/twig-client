@@ -17,12 +17,13 @@
 import axios from 'axios';
 import { defineComponent, ref } from 'vue';
 
-const kratos_user_id = ref("")
+const kratos_user_id : any = ref("")
 const username = ref("")
 const showcased_projects: any = ref([]);
 
 export default defineComponent({
     name: "ProjectList",
+    props: ['explore'],
     data() {
         return {
             showcased_projects,
@@ -32,8 +33,9 @@ export default defineComponent({
     },
     methods: {
         add_project: function () {
-            const request_url = `${import.meta.env.VITE_API_URL}/project/new` +
-                `?user=${kratos_user_id.value}`
+            const request_url = `${import.meta.env.VITE_API_URL}`+
+                                `/project/new`+
+                                `?user=${kratos_user_id.value}`
             axios.put(request_url)
                 .then(response => {
                     showcased_projects.value.unshift(response.data)
@@ -50,7 +52,14 @@ export default defineComponent({
                 })
         },
         get_projects: function () {
-            const request_url = import.meta.env.VITE_API_URL + '/user/tch1001'
+            var request_url = '';
+            if(this.$props.explore){
+                request_url = `${import.meta.env.VITE_API_URL}`+
+                            `/explore`
+            }else{
+                request_url = `${import.meta.env.VITE_API_URL}`+
+                            `/user/${kratos_user_id.value}`
+            }
             axios
                 .get(request_url)
                 .then(response => {
@@ -61,6 +70,7 @@ export default defineComponent({
         }
     },
     mounted() {
+        kratos_user_id.value = this.$route.params.id;
         this.get_projects()
     }
 })

@@ -17,6 +17,7 @@
     "@ory/client": "^0.2.0-alpha.4",
     "@ory/kratos-client": "^0.10.1",
     "bulma": "^0.9.4",
+    "local-cors-proxy": "^1.1.0",
     "neo4j-driver": "^4.4.7",
     "serve": "^14.0.1",
     "v-network-graph": "^0.6.5",

@@ -1,5 +1,5 @@
 <template>
-    <ProjectList></ProjectList>
+    <ProjectList :explore="true"></ProjectList>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';

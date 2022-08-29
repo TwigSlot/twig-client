@@ -33,7 +33,7 @@ export default defineComponent({
     },
     mounted(){
         project.id = this.$route.params.id
-        const request_url = `${import.meta.env.VITE_API_URL}/`+
+        const request_url = `${import.meta.env.VITE_API_URL}`+
                         `/project/${project.id}`+
                         `?list_items=0`
         axios.get(request_url)
