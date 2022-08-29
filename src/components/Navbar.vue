@@ -24,12 +24,12 @@
         <div class="navbar-item">
           <div class="buttons">
 
-            <a v-if="!session" :href="kratosBasePath + '/ui/login'">Login</a>
+            <a v-if="!session" :href="authBasePath + '/login'">Login</a>
             <div v-if="session" class="navbar-item">
-              <a :href="logoutUrl">Logout</a>
+              <a :href="logoutUrl" @click="logout" >Logout</a>
             </div>
             <div v-if="session" class="navbar-item">
-              <a target="_blank" :href="kratosBasePath + '/ui/settings'">Settings</a>
+              <a :href="authBasePath + '/settings'">Settings</a>
               <!-- <router-link :to="{ path: `/settings/${session.identity.id}` }">Settings</router-link> -->
             </div>
             <div v-if="session" class="navbar-item">
@@ -48,9 +48,10 @@
   </nav>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import login from '../login'
 const kratosBasePath = login.kratosBasePath;
+const authBasePath = login.authBasePath;
 const flaskBasePath = "http://localhost:5000"
 
 const sdk = login.sdk;
@@ -63,14 +64,20 @@ export default defineComponent({
   components: {
 
   },
+  methods:{
+    logout: function(){
+      this.$store.commit('update_kratos_user_id', 'guest');
+    }
+  },
   data() {
     return {
-      session, flaskBasePath, kratosBasePath, logoutUrl
+      session, flaskBasePath, kratosBasePath, authBasePath, logoutUrl
     }
   },
   mounted() {
     sdk.toSession().then(({ data }) => {
       this.session = data
+      this.$store.commit('update_kratos_user_id', data.identity.id)
       sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url
       })

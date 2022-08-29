@@ -234,6 +234,7 @@ export default defineComponent({
         resumeKeyDown: function () { pause_key_down = false; }
     },
     mounted() {
+        axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
         project_id.value = this.$route.params.id
         get_items()
     },

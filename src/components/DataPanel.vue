@@ -1,10 +1,9 @@
 <template>
     <div class="info-panel-outer">
-        <text>he {{data_panel.uid}}</text><br>
-        <input :value="data_panel.name" @focus="pauseKeyDown" @blur="handleBlur('name', $event)"/><br>
-        <input :value="data_panel.description" @focus="pauseKeyDown" @blur="handleBlur('description', $event)"/>
-        <h2>Resources</h2>
-        <button>Add</button>
+        <text>Id: {{data_panel.uid}}</text><br>
+        <input placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown" @blur="handleBlur('name', $event)"/><br>
+        <input placeholder="URL" :value="data_panel.link" @focus="pauseKeyDown" @blur="handleBlur('link', $event)"/><a :href="data_panel.link" target="_blank">open</a><br>
+        <textarea rows="5" cols="50" placeholder="Description" :value="data_panel.description" @focus="pauseKeyDown" @blur="handleBlur('description', $event)"/><br>
         <div class="info-panel-inner">
             <div>
             </div>
@@ -23,6 +22,7 @@ export default defineComponent({
     },
     props: ["data_panel"],
     mounted(){
+        axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
         project_id.value = this.$route.params.id
     },
     methods: {
