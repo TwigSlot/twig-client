@@ -73,8 +73,8 @@ export default defineComponent({
   mounted() {
     sdk.toSession().then(({ data }) => {
       this.session = data
-      axios.defaults.headers['X-User'] = data.identity.id
-      console.log("headers x-user set to ", data.identity.id)
+      this.$store.state.kratos_user_id = data.identity.id
+      axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
       sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url
       })

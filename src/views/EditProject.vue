@@ -34,6 +34,7 @@ export default defineComponent({
     mounted(){
         project.id = this.$route.params.id
         console.log("requesting ")
+        console.log('from edit project', this.$store.state.kratos_user_id) 
         const request_url = `${import.meta.env.VITE_API_URL}`+
                         `/project/${project.id}`+
                         `?list_items=0`
