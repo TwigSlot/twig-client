@@ -48,6 +48,7 @@
   </nav>
 </template>
 <script lang="ts">
+import axios from 'axios';
 import { defineComponent, ref } from 'vue'
 import login from '../login'
 const kratosBasePath = login.kratosBasePath;
@@ -72,6 +73,8 @@ export default defineComponent({
   mounted() {
     sdk.toSession().then(({ data }) => {
       this.session = data
+      axios.defaults.headers['X-User'] = data.identity.id
+      console.log("headers x-user set to ", data.identity.id)
       sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url
       })

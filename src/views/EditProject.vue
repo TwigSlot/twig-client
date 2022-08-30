@@ -33,6 +33,7 @@ export default defineComponent({
     },
     mounted(){
         project.id = this.$route.params.id
+        console.log("requesting ")
         const request_url = `${import.meta.env.VITE_API_URL}`+
                         `/project/${project.id}`+
                         `?list_items=0`
