@@ -1,10 +1,9 @@
 <template>
     <div class="info-panel-outer">
-        <text>he {{data_panel.uid}}</text><br>
+        <text>Id: {{data_panel.uid}}</text><br>
         <input :value="data_panel.name" @focus="pauseKeyDown" @blur="handleBlur('name', $event)"/><br>
-        <input :value="data_panel.description" @focus="pauseKeyDown" @blur="handleBlur('description', $event)"/>
-        <h2>Resources</h2>
-        <button>Add</button>
+        <input :value="data_panel.link" @focus="pauseKeyDown" @blur="handleBlur('link', $event)"/><a :href="data_panel.link" target="_blank">open</a><br>
+        <textarea :value="data_panel.description" @focus="pauseKeyDown" @blur="handleBlur('description', $event)"/><br>
         <div class="info-panel-inner">
             <div>
             </div>
