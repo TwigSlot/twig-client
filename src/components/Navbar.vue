@@ -26,7 +26,7 @@
 
             <a v-if="!session" :href="authBasePath + '/login'">Login</a>
             <div v-if="session" class="navbar-item">
-              <a :href="logoutUrl">Logout</a>
+              <a :href="logoutUrl" @click="logout" >Logout</a>
             </div>
             <div v-if="session" class="navbar-item">
               <a :href="authBasePath + '/settings'">Settings</a>
@@ -48,7 +48,6 @@
   </nav>
 </template>
 <script lang="ts">
-import axios from 'axios';
 import { defineComponent, ref } from 'vue'
 import login from '../login'
 const kratosBasePath = login.kratosBasePath;
@@ -65,6 +64,11 @@ export default defineComponent({
   components: {
 
   },
+  methods:{
+    logout: function(){
+      this.$store.commit('update_kratos_user_id', 'guest');
+    }
+  },
   data() {
     return {
       session, flaskBasePath, kratosBasePath, authBasePath, logoutUrl
@@ -73,8 +77,7 @@ export default defineComponent({
   mounted() {
     sdk.toSession().then(({ data }) => {
       this.session = data
-      this.$store.state.kratos_user_id = data.identity.id
-      axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
+      this.$store.commit('update_kratos_user_id', data.identity.id)
       sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url
       })

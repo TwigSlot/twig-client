@@ -1,15 +1,20 @@
 <template>
     <button @click="add_project">Add</button>
     <div v-for="(project, project_idx) in showcased_projects" :key="project_idx">
-        <router-link :to="{ path: `/project/${project.uid}` }">
-            <h2>{{ project.name }}</h2>
-            <h2>{{ project.description }}</h2>
-            <ul v-for="(author, author_idx) in project.authors" :key="author_idx">
-                <li>{{ author }}</li>
-            </ul>
+        <router-link :to="{ path: `/project/${project.project.uid}` }">
+            <h2>{{ project.project.name }}</h2>
         </router-link>
-        <router-link :to="{ name: 'EditProject', params: {id: project.uid }}">edit</router-link><br>
-        <button @click="delete_project(project.uid)">delete</button>
+            <h2>{{ project.project.description }}</h2>
+            <h2>Owner: 
+              <router-link :to="{ path: `/user/${project.owner}` }">
+                {{ project.owner }}
+              </router-link>
+            </h2>
+        <router-link v-if="project.owner == $store.state.kratos_user_id" :to="{ name: 'EditProject', params: {id: project.project.uid }}">edit<br></router-link>
+        <button v-if="project.owner == $store.state.kratos_user_id" @click="delete_project(project.project.uid)">delete 
+        </button>
+        <br v-if="project.owner == $store.state.kratos_user_id"> 
+        ---------------
         <br>
     </div>
 </template>
@@ -48,7 +53,7 @@ export default defineComponent({
                                 `/delete`
             axios.post(request_url)
                 .then(response => {
-                    showcased_projects.value = showcased_projects.value.filter((ele: any) => ele.uid != project_id)
+                    showcased_projects.value = showcased_projects.value.filter((ele: any) => ele.project.uid != project_id)
                 })
         },
         get_projects: function () {
@@ -71,6 +76,7 @@ export default defineComponent({
     },
     mounted() {
         kratos_user_id.value = this.$route.params.id;
+        axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
         this.get_projects()
     }
 })

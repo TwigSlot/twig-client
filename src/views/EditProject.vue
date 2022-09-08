@@ -33,11 +33,10 @@ export default defineComponent({
     },
     mounted(){
         project.id = this.$route.params.id
-        console.log("requesting ")
-        console.log('from edit project', this.$store.state.kratos_user_id) 
         const request_url = `${import.meta.env.VITE_API_URL}`+
                         `/project/${project.id}`+
                         `?list_items=0`
+        axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
         axios.get(request_url)
             .then(response => {
                 project.value = response.data.project
