@@ -1,7 +1,9 @@
 <template>
-    <img style="width:40px; height:40px" v-bind:src="profile_picture_src" />
-    <h1>{{ user.name }}</h1>
-    <h1>{{ user.email }}</h1>
+    <div style="margin-left: 50px; margin-bottom: 50px;">
+        <img style="width:40px; height:40px" v-bind:src="profile_picture_src" />
+        <h1>{{ user.name }}</h1>
+        <h1>{{ user.email }}</h1>
+    </div>
     <ProjectList></ProjectList>
 </template>
 <script lang="ts">

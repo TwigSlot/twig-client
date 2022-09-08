@@ -1,6 +1,9 @@
 <template>
-    <button @click="add_project">Add</button>
-    <div v-for="(project, project_idx) in showcased_projects" :key="project_idx">
+    <button style="margin-left: 50px" @click="add_project">Add</button>
+    <div style="height: 50px">
+
+    </div>
+    <div style="margin-left: 50px" v-for="(project, project_idx) in showcased_projects" :key="project_idx">
         <router-link :to="{ path: `/project/${project.project.uid}` }">
             <h2>{{ project.project.name }}</h2>
         </router-link>
@@ -69,8 +72,10 @@ export default defineComponent({
                 .get(request_url)
                 .then(response => {
                     showcased_projects.value = response.data.projects
-                    kratos_user_id.value = response.data.user.kratos_user_id
-                    username.value = response.data.user.username
+                    if(!this.$props.explore){
+                        kratos_user_id.value = response.data.user.kratos_user_id
+                        username.value = response.data.user.username
+                    }
                 })
         }
     },
