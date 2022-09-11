@@ -1,7 +1,7 @@
 <template>
     <div class="info-panel-outer">
         <text>Id: {{data_panel.uid}}</text><br>
-        <input placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown"
+        <input cols="50" placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown"
             @blur="handleBlur('name', $event)" /><br>
         <input placeholder="URL" :value="data_panel.link" @focus="pauseKeyDown" @blur="handleBlur('link', $event)" /><a
             :href="data_panel.link" target="_blank">open</a><br>
