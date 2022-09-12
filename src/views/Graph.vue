@@ -6,7 +6,7 @@
             :configs="graphData.configs" :event-handlers="eventHandlers" />
     </div>
     <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
-        :data_panel="dataPanel"></DataPanelVue>
+        :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
 </template>
@@ -133,6 +133,9 @@ export default defineComponent({
         }
     },
     methods: {
+        updatedDataPanel: function(){
+            dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`] 
+        },
         handle_view_click: function (event: any) {
             const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
             if (selected_mode == 'add-node') {

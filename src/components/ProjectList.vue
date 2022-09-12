@@ -50,7 +50,6 @@ export default defineComponent({
                 })
         },
         delete_project: function(project_id: any){
-            console.log(project_id)
             const request_url = `${import.meta.env.VITE_API_URL}`+
                                 `/project/${project_id}`+
                                 `/delete`
@@ -83,6 +82,16 @@ export default defineComponent({
         kratos_user_id.value = this.$route.params.id;
         axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
         this.get_projects()
+    },
+    watch: {
+        '$route.params.id':{
+            handler(){
+                if(!this.$route.params.id) return;
+                kratos_user_id.value = this.$route.params.id;
+                axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
+                this.get_projects()
+            }
+        }
     }
 })
 </script>
