@@ -39,18 +39,27 @@ export default defineComponent({
                     `/project/${project_id.value}` +
                     `/resource/${resource_id}` +
                     `/edit?`
-            var request_url_post = `${property}=${new_value}`
-            console.log(property)
-            if (property == 'link') {
+            var request_url_post = `${property}=${encodeURIComponent(new_value)}`
+            if (property == 'link' && this.$props.data_panel.link != new_value) {
                 const autofill_request_url =
                     `${import.meta.env.VITE_AUTOFILL_URL}` +
-                    `/?url=${new_value}`
-                const response = await axios.get(autofill_request_url)
-                console.log(response.data)
-
-                const name = response.data.title
-                const link = response.data.url
-                const description = response.data.summary
+                    `/?url=${(new_value)}`
+                var name = '', link = '', description = '';
+                try{
+                    const response = await axios.get(autofill_request_url)
+                    name =  response.data.title
+                    link = response.data.url
+                    description = response.data.summary
+                }catch(err){
+                    name = `${new_value}`
+                    link = new_value
+                    description = `description for ${new_value}`
+                }
+                const nameLengthLimit = 100;
+                name = name.substring(0,nameLengthLimit) + (name.length > nameLengthLimit ? '...' : '')
+                name = encodeURIComponent(name)
+                link = encodeURIComponent(link)
+                description = encodeURIComponent(description)
                 request_url_post = `name=${name}&link=${link}&description=${description}`
             }
             axios
