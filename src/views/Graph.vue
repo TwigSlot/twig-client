@@ -7,7 +7,7 @@
     </div>
     <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
-    <ControlPanelVue @home="home" @customkeydown="keydown" ref="control_panel_ref">
+    <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
 </template>
 <script lang="ts">
@@ -46,6 +46,12 @@ function delete_edge(edge: any) {
 }
 function add_node(raw: any) {
     graphData.nodes.value[`node${raw.uid}`] = raw
+    if('pos_x' in raw && 'pos_y' in raw){
+        graphData.layouts.value.nodes[`node${raw.uid}`] = {
+            'x': raw['pos_x'],
+            'y': raw['pos_y']
+        }
+    }
 }
 function add_edge(s: string, t: string, uid: any) {
     graphData.edges.value[uid] =
@@ -197,9 +203,22 @@ export default defineComponent({
                 bottom: maxY + padding,
             });
         },
+        saveLocations: function(){
+            const node_pos_raw = (this.$refs.graph_ref as any).layouts.nodes
+            const node_pos : any = {}
+            for(var n in node_pos_raw){
+                node_pos[n.substring(4)] = {
+                    x: node_pos_raw[n].x,
+                    y: node_pos_raw[n].y,
+                }
+            }
+            console.log(node_pos)
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${project_id.value}` +
+                `/positions/update`
+            axios.post(request_url, node_pos)
+        },
         get_items,
-        // add_node,
-        // add_edge_raw,
         add_node_with_mouse: function (raw: any, e: any) {
             const point = { x: e.offsetX, y: e.offsetY }
             const svgPoint = (this.$refs.graph_ref as any).translateFromDomToSvgCoordinates(point);
