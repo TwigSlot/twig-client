@@ -62,6 +62,8 @@ export default defineComponent({
                 description = encodeURIComponent(description)
                 request_url_post = `name=${name}&link=${link}&description=${description}`
             }
+            const requestLengthLimit = 4000;
+            request_url_post = request_url_post.substring(0,requestLengthLimit) + (request_url_post.length > requestLengthLimit ? '...' : '')
             axios
                 .post(request_url_pre + request_url_post)
                 .then(response => {
