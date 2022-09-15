@@ -7,6 +7,7 @@
             <option value="delete">Delete (D)</option>
             <option value="move">Look Around (A)</option>
         </select>
+        <button @click="$emit('save-locations')">Save Locations</button>
     </div>
 </template>
 <script lang="ts">
