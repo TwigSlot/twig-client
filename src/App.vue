@@ -4,7 +4,6 @@
 </template>
 
 <script lang="ts">
-
 import { defineComponent, ref, reactive } from 'vue'
 import graphData from './graphData';
 import Navbar from './components/Navbar.vue';
@@ -73,6 +72,8 @@ export default defineComponent({
 
 
 <style>
+@import "../src/styles/_reset.scss";
+
 #graph {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
