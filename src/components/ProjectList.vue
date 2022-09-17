@@ -14,7 +14,7 @@
                 {{ project.owner }}
               </router-link>
             </h2>
-        <router-link v-if="project.owner == $store.state.kratos_user_id" :to="{ name: 'EditProject', params: {id: project.project.uid }}">edit<br></router-link>
+        <router-link v-if="project.owner == $store.state.kratos_user_id || connection_status != 'connected'" :to="{ name: 'EditProject', params: {id: project.project.uid }}">edit<br></router-link>
         <button v-if="project.owner == $store.state.kratos_user_id" @click="delete_project(project.project.uid)">delete 
         </button>
         <br v-if="project.owner == $store.state.kratos_user_id"> 
