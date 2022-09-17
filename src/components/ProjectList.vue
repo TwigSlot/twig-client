@@ -1,5 +1,6 @@
 <template>
-  <div class="buttons">
+  <div class="main-container">
+    <div class="buttons">
     <button class="button is-primary is-light" @click="add_project">Add Project</button>
   </div>
 
@@ -50,7 +51,15 @@
       </td>
     </tbody>
   </table>
+
+  </div>
 </template>
+
+<style lang="scss" scoped>
+  .main-container {
+    margin: 20px !important;
+  }
+</style>
 
 <script lang="ts">
 import axios from "axios";

@@ -10,6 +10,7 @@
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
 </template>
+
 <script lang="ts">
 import axios from "axios";
 import DataPanelVue from "../components/DataPanel.vue";

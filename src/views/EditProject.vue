@@ -1,24 +1,33 @@
 <template>
-  <h1 class="title is-3">Project ID: {{ project.id }}</h1>
+  <div class="main-container">
+    <h1 class="title is-3">Project ID: {{ project.id }}</h1>
 
-  <div class="control">
-    <input
-      class="input is-hovered"
-      type="text"
-      placeholder="Project Name"
-      @blur="handleBlur('name', $event)"
-      :value="project.name"
-    />
-  </div>
-  <div class="control">
-    <textarea
-      class="textarea"
-      :placeholder="project.description"
-      :value="project.description"
-      @blur="handleBlur('description', $event)"
-    ></textarea>
+    <div class="control">
+      <input
+        class="input is-hovered"
+        type="text"
+        placeholder="Project Name"
+        @blur="handleBlur('name', $event)"
+        :value="project.name"
+      />
+    </div>
+    <div class="control">
+      <textarea
+        class="textarea"
+        :placeholder="project.description"
+        :value="project.description"
+        @blur="handleBlur('description', $event)"
+      ></textarea>
+    </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.main-container {
+  margin: 20px !important;
+}
+</style>
+
 <script lang="ts">
 import axios from "axios";
 import { defineComponent, ref } from "vue";
