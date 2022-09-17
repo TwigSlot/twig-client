@@ -3,6 +3,7 @@
     <div style="height: 50px">
 
     </div>
+    <text>{{connection_status}}</text>
     <div style="margin-left: 50px" v-for="(project, project_idx) in showcased_projects" :key="project_idx">
         <router-link :to="{ path: `/project/${project.project.uid}` }">
             <h2>{{ project.project.name }}</h2>
@@ -28,6 +29,7 @@ import { defineComponent, ref } from 'vue';
 const kratos_user_id : any = ref("")
 const username = ref("")
 const showcased_projects: any = ref([]);
+const connection_status: any = ref("connecting...")
 
 export default defineComponent({
     name: "ProjectList",
@@ -36,7 +38,8 @@ export default defineComponent({
         return {
             showcased_projects,
             kratos_user_id,
-            username
+            username,
+            connection_status
         }
     },
     methods: {
@@ -75,6 +78,20 @@ export default defineComponent({
                         kratos_user_id.value = response.data.user.kratos_user_id
                         username.value = response.data.user.username
                     }
+                    connection_status.value = "connected"
+                })
+                .catch(err => {
+                    connection_status.value = 'failed to connect, err = ' + err
+                    showcased_projects.value = [
+                        {
+                            'owner': 'fake owner 1',
+                            'project':{
+                                'uid': 1,
+                                'name': 'dummy project 1',
+                                'description': 'dummy description 1'
+                            }
+                        }
+                    ];
                 })
         }
     },
