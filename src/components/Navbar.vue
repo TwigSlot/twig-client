@@ -79,7 +79,6 @@
 </style>
 
 <script lang="ts">
-import { applyMargin } from "v-network-graph/lib/modules/calculation/line";
 import { defineComponent } from "vue";
 import login from "../login";
 import NavBurger from "./NavBurger.vue";
@@ -88,8 +87,8 @@ const kratosBasePath = login.kratosBasePath;
 const authBasePath = login.authBasePath;
 const flaskBasePath = "http://localhost:5000";
 const sdk = login.sdk;
-var session: any = null;
-var logoutUrl: string = "";
+const session: any = null;
+const logoutUrl: string = "";
 
 export default defineComponent({
   name: "Navbar",

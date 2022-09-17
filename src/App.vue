@@ -72,8 +72,6 @@ export default defineComponent({
 
 
 <style>
-@import "../src/styles/_reset.scss";
-
 #graph {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -142,11 +140,5 @@ export default defineComponent({
 
 .command {
   cursor: pointer
-}
-
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
 }
 </style>
