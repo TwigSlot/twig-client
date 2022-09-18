@@ -1,34 +1,63 @@
 <template>
-  <h1 class="title is-3">Project ID: {{ project.id }}</h1>
+  <div class="main-container">
+    <div class="prev-page">
+      <el-button-group>
+        <el-button type="primary" :icon="ArrowLeft" @click="$router.go(-1)"
+          >Previous Page</el-button
+        >
+      </el-button-group>
+    </div>
 
-  <div class="control">
-    <input
-      class="input is-hovered"
-      type="text"
-      placeholder="Project Name"
-      @blur="handleBlur('name', $event)"
-      :value="project.name"
-    />
-  </div>
-  <div class="control">
-    <textarea
-      class="textarea"
-      :placeholder="project.description"
-      :value="project.description"
-      @blur="handleBlur('description', $event)"
-    ></textarea>
+    <h1 class="title is-3">Project ID: {{ project.id }}</h1>
+
+    <div class="control" :style="{ paddingBottom: '30px' }">
+      <el-input
+        v-model="input"
+        size="large"
+        placeholder="Project Name"
+        @blur="handleBlur('name', $event)"
+      />
+    </div>
+    <div class="control">
+      <el-input
+        v-model="textarea"
+        :autosize="{ minRows: 2, maxRows: 10 }"
+        type="textarea"
+        :placeholder="project.description"
+        @blur="handleBlur('description', $event)"
+      />
+    </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.main-container {
+  margin: 20px !important;
+}
+
+.prev-page {
+  margin-bottom: 30px;
+}
+</style>
+
 <script lang="ts">
 import axios from "axios";
 import { defineComponent, ref } from "vue";
+import { ArrowLeft } from "@element-plus/icons-vue";
+
 const project: any = ref({ id: 0, name: "Loading...", description: "" });
+const textarea = ref("");
+const input = ref("");
+
 export default defineComponent({
   name: "EditProject",
   setup() {},
   data() {
     return {
       project,
+      ArrowLeft,
+      textarea,
+      input,
     };
   },
   methods: {

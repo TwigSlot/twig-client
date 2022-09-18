@@ -1,56 +1,90 @@
 <template>
-  <div class="buttons">
-    <button class="button is-primary is-light" @click="add_project">Add Project</button>
-  </div>
+  <div class="main-container">
+    <div class="buttons">
+      <button class="button is-primary is-light" @click="add_project">
+        Add Project
+      </button>
+    </div>
 
-  <h5 :style="{paddingBottom: '20px'}">{{ connection_status }}</h5>
+    <h5 :style="{ paddingBottom: '20px' }">{{ connection_status }}</h5>
 
-  <table class="table is-bordered" v-for="(project) in showcased_projects" aria-describedby="project-table">
-    <thead>
-      <tr>
-        <th><abbr title="project-name">Project</abbr></th>
-        <th><abbr title="description">Description</abbr></th>
-        <th><abbr title="owner">Owner</abbr></th>
-        <th><abbr title="edit">Edit</abbr></th>
-      </tr>
-    </thead>
-    <tbody>
-      <td>
-        <a :href="'/project/' + `${project.project.uid}`">{{
-          project.project.name
-        }}</a>
-      </td>
-      <td>
-        {{ project.project.description }}
-      </td>
-      <td>
-        <a :href="'/user/' + `${project.owner}`">{{ project.owner }}</a>
-      </td>
-      <td
-        v-if="
-          project.owner == $store.state.kratos_user_id ||
-          connection_status != 'connected'
-        "
-      >
-        <button
-          v-if="project.owner == $store.state.kratos_user_id"
-          @click="delete_project(project.project.uid)"
-        >
-          Delete
-        </button>
-        <button
+    <table
+      class="table is-bordered is-fullwidth"
+      v-for="project in showcased_projects"
+      aria-describedby="project-table"
+    >
+      <thead>
+        <tr>
+          <th><abbr title="project-name">Project</abbr></th>
+          <th><abbr title="description">Description</abbr></th>
+          <th><abbr title="owner">Owner</abbr></th>
+          <th><abbr title="edit">Edit</abbr></th>
+        </tr>
+      </thead>
+      <tbody>
+        <td>
+          <a :href="'/project/' + `${project.project.uid}`">{{
+            project.project.name
+          }}</a>
+        </td>
+        <td>
+          {{ project.project.description }}
+        </td>
+        <td>
+          <a :href="'/user/' + `${project.owner}`">{{ project.owner }}</a>
+        </td>
+        <td
           v-if="
             project.owner == $store.state.kratos_user_id ||
             connection_status != 'connected'
           "
-          @click="edit_project(project.project.uid)"
         >
-          Edit
-        </button>
-      </td>
-    </tbody>
-  </table>
+          <div class="button-container">
+            <div class="float-child">
+              <button
+                class="button is-primary is-light is-small is-pulled-left"
+                v-if="
+                  project.owner == $store.state.kratos_user_id ||
+                  connection_status != 'connected'
+                "
+                @click="edit_project(project.project.uid)"
+              >
+                Edit
+              </button>
+            </div>
+            <div class="float-child">
+              <button
+                class="button is-primary is-light is-small is-pulled-right"
+                v-if="project.owner == $store.state.kratos_user_id"
+                @click="delete_project(project.project.uid)"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </td>
+      </tbody>
+    </table>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.main-container {
+  margin: 20px !important;
+}
+
+.button-container {
+  display: flex;
+}
+
+.float-child {
+  flex: 1;
+}
+
+.float-child:first-child {
+  margin-right: 10px;
+}
+</style>
 
 <script lang="ts">
 import axios from "axios";
@@ -94,7 +128,7 @@ export default defineComponent({
       });
     },
     edit_project: function (project_id: any) {
-      this.$router.push("/project-edit/"+project_id)
+      this.$router.push("/project-edit/" + project_id);
     },
     get_projects: function () {
       var request_url = "";
