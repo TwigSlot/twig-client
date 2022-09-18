@@ -57,7 +57,7 @@
           </div>
         </div>
 
-        <a class="navbar-item" href="https://github.com/twigslot/twig-client" :style="{ marginLeft: '10px'}">
+        <a class="navbar-item" href="https://github.com/twigslot/twig-client" :style="{ marginRight: '20px'}">
           <font-awesome-icon
             icon="fa-brands fa-github"
             class="icon"
