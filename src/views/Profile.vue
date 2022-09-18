@@ -1,5 +1,4 @@
 <template>
-  <div class="main-container">
     <CardComponent
       :imageUrl="profile_picture_src"
       :name="user.name"
@@ -7,15 +6,8 @@
       content="Lorem ipsum dolor sit amet, consectetur adipiscing elit.
       Phasellus nec iaculis mauris."
     ></CardComponent>
-    <ProjectList></ProjectList>
-  </div>
+  <ProjectList></ProjectList>
 </template>
-
-<style lang="scss" scoped>
-.main-container {
-  margin: 20px !important;
-}
-</style>
 
 <script lang="ts">
 import login from "../login";

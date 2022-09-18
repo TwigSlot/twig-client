@@ -75,6 +75,7 @@ footer,
 header,
 hgroup,
 menu,
+nav,
 output,
 ruby,
 section,
@@ -106,9 +107,12 @@ section {
   display: block;
 }
 
-html, body {
+html {
+  margin: 20px;
+}
+
+body {
   line-height: 1;
-  height:100vh;
 }
 
 ol,
