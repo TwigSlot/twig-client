@@ -31,11 +31,11 @@
           {{ project.project.description }}
         </td>
         <td>
-          <a :href="'/user/' + `${project.owner}`">{{ project.owner }}</a>
+          <a :href="'/user/' + `${project.owner.kratos_user_id}`">{{ project.owner.first_name + ' ' + project.owner.last_name }}</a>
         </td>
         <td
           v-if="
-            project.owner == $store.state.kratos_user_id ||
+            project.owner.kratos_user_id == $store.state.kratos_user_id ||
             connection_status != 'connected'
           "
         >
@@ -44,7 +44,7 @@
               <button
                 class="button is-primary is-light is-small is-pulled-left"
                 v-if="
-                  project.owner == $store.state.kratos_user_id ||
+                  project.owner.kratos_user_id == $store.state.kratos_user_id ||
                   connection_status != 'connected'
                 "
                 @click="edit_project(project.project.uid)"
@@ -55,7 +55,7 @@
             <div class="float-child">
               <button
                 class="button is-primary is-light is-small is-pulled-left"
-                v-if="project.owner == $store.state.kratos_user_id"
+                v-if="project.owner.kratos_user_id == $store.state.kratos_user_id"
                 @click="delete_project(project.project.uid)"
               >
                 Delete
