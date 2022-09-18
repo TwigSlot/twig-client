@@ -11,15 +11,15 @@
           </figure>
         </div>
         <div class="media-content">
-          <p class="title is-4">{{ name }}</p>
-          <p class="subtitle is-6">{{ email }}</p>
+          <p class="title is-4">{{ user.first_name + ' ' + user.last_name}}</p>
+          <p class="subtitle is-6">{{ user.email }}</p>
         </div>
       </div>
 
       <div class="content">
-        {{ content }}
+        This twig germinated on
         <br />
-        <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+        <time datetime="2016-1-1">{{ new Date(user.created_at) }}</time>
       </div>
     </div>
   </div>
@@ -30,8 +30,7 @@ export default {
   name: "ProfileCardComponent",
   props: {
     imageUrl: String,
-    name: String,
-    email: String,
+    user: Object,
     content: String,
   },
 };
