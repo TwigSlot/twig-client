@@ -54,8 +54,9 @@
             </div>
             <div class="float-child">
               <button
-                class="button is-primary is-light is-small is-pulled-left"
-                v-if="project.owner.kratos_user_id == $store.state.kratos_user_id"
+                class="button is-primary is-dark is-small is-pulled-left is-danger"
+                v-if="project.owner.kratos_user_id == $store.state.kratos_user_id || 
+                  connection_status != 'connected'"
                 @click="delete_project(project.project.uid)"
               >
                 Delete
@@ -122,6 +123,7 @@ export default defineComponent({
       });
     },
     delete_project: function (project_id: any) {
+      if(!window.confirm(`Do you really want to delete project ${project_id}`)) return;
       const request_url =
         `${import.meta.env.VITE_API_URL}` +
         `/project/${project_id}` +
@@ -152,6 +154,7 @@ export default defineComponent({
             username.value = response.data.user.username;
           }
           connection_status.value = "connected";
+          console.log(response.data.projects)
         })
         .catch((err) => {
           connection_status.value = "failed to connect, err = " + err;

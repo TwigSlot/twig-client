@@ -143,7 +143,7 @@ export default defineComponent({
             dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`] 
         },
         handle_view_click: function (event: any) {
-            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
+            const selected_mode = (this.$store.state as any).selected_mode
             if (selected_mode == 'add-node') {
                 const request_url = `${import.meta.env.VITE_API_URL}` +
                     `/project/${project_id.value}` +
@@ -153,31 +153,31 @@ export default defineComponent({
                     .then(response => {
                         this.add_node_with_mouse(response.data, event.event);
                     });
-                (this.$refs.control_panel_ref as any).selected_mode = 'move'
+                (this.$store.state as any).selected_mode = 'move'
             } else if (selected_mode == 'add-edge') {
                 edge_source_node = null;
             }
         },
         handle_node_click: function (event: any) {
-            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
+            const selected_mode = (this.$store.state as any).selected_mode
             if (selected_mode == 'add-edge') {
                 if (edge_source_node) {
                     create_edge(edge_source_node, event.node);
-                    (this.$refs.control_panel_ref as any).selected_mode = 'move'
+                    (this.$store.state as any).selected_mode = 'move'
                 }
             } else {
                 edge_source_node = event.node
             }
         },
         handle_node_select: function (event: any) {
-            const selected_mode = (this.$refs.control_panel_ref as any).selected_mode
+            const selected_mode = (this.$store.state as any).selected_mode
             if (selected_mode == 'add-edge') {
                 if (event.length == 0) edge_source_node = null;
                 else if (event.length == 1) {
                     edge_source_node = event[0]
                 } else if (event.length == 2) {
                     create_edge(event[0], event[1]);
-                    (this.$refs.control_panel_ref as any).selected_mode = 'move'
+                    (this.$store.state as any).selected_mode = 'move'
                 }
             }
             selected_nodes.value = event
@@ -228,17 +228,17 @@ export default defineComponent({
         keydown: function (e: any) {
             if (pause_key_down) return;
             if (e.key == 'e') {
-                (this.$refs.control_panel_ref as any).selected_mode = 'add-edge'
+                this.$store.commit('update_selected_mode', 'add-edge')
                 if (selected_nodes.value.length == 2) {
                     create_edge(selected_nodes.value[0], selected_nodes.value[1]);
-                    (this.$refs.control_panel_ref as any).selected_mode = 'move'
+                    this.$store.commit('update_selected_mode', 'move')
                 }
             } else if (e.key == 'v') {
-                (this.$refs.control_panel_ref as any).selected_mode = 'add-node'
+                this.$store.commit('update_selected_mode', 'add-node')
             } else if (e.key == 'a') {
-                (this.$refs.control_panel_ref as any).selected_mode = 'move'
+                this.$store.commit('update_selected_mode', 'move')
             } else if (e.key == 'd') {
-                (this.$refs.control_panel_ref as any).selected_mode = 'delete'
+                this.$store.commit('update_selected_mode', 'delete')
             } else if (e.key == 'Backspace' || e.key == 'Delete') {
                 if (selected_nodes.value.length > 0 && confirm(`Delete ${selected_nodes.value.length} nodes?`)) {
                     for (const node of selected_nodes.value) {
