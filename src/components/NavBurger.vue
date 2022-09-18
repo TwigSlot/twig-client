@@ -8,7 +8,10 @@
 export default {
   name: "NavBurger",
   data() {
-    return document.addEventListener("DOMContentLoaded", () => {
+    return {}
+  },
+  mounted(){
+    document.addEventListener("DOMContentLoaded", () => {
       // Get all "navbar-burger" elements
       const $navbarBurgers = Array.prototype.slice.call(
         document.querySelectorAll(".navbar-burger"),
@@ -28,6 +31,6 @@ export default {
         });
       });
     });
-  },
+  }
 };
 </script>
