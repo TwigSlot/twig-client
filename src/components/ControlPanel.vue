@@ -1,35 +1,30 @@
 <template>
     <div class="control-panel">
-        <button @click="$emit('home')">Home</button>
-        <select v-model="selected_mode" class="flush-right">
-            <option value="add-node">Add Vertex (V)</option>
-            <option value="add-edge">Add Edge (E)</option>
-            <option value="delete">Delete (D)</option>
-            <option value="move">Look Around (A)</option>
-        </select>
-        <button @click="$emit('save-locations')">Save Locations</button>
+        <button class="button is-light" @click="$emit('home')">Home</button>
+        <DropdownComponent :dropdownItem="['Add Vertex (V)', 'Add Edge (E)', 'Delete (D)', 'Look Around (A)']"></DropdownComponent>
+        <button class="button is-light" @click="$emit('save-locations')">Save Locations</button>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import DropdownComponent from "./DropdownComponent.vue";
 
 export default defineComponent({
     name: "ControlPanel",
-    data(){
+    data() {
         return {
-            selected_mode: 'move'
-        }
+            selected_mode: "move"
+        };
     },
-    methods:{
-        
-    },
-    mounted(){
+    methods: {},
+    mounted() {
         // this is put here to avoid TypeErrors caused by
         // html loading the following code before control_panel_ref is mounted
-        document.addEventListener('keydown', (e) => {
-            this.$emit('customkeydown', e)
-        })
-    }
+        document.addEventListener("keydown", (e) => {
+            this.$emit("customkeydown", e);
+        });
+    },
+    components: { DropdownComponent }
 })
 </script>
 <style scoped>

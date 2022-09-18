@@ -4,7 +4,6 @@
 </template>
 
 <script lang="ts">
-
 import { defineComponent, ref, reactive } from 'vue'
 import graphData from './graphData';
 import Navbar from './components/Navbar.vue';
@@ -141,11 +140,5 @@ export default defineComponent({
 
 .command {
   cursor: pointer
-}
-
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
 }
 </style>
