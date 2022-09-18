@@ -8,6 +8,7 @@
         placeholder="Name"
         :value="data_panel.name"
         @focus="pauseKeyDown"
+        @blur="handleBlur('name', $event)"
       />
     </div>
     <div class="control"  :style="{marginBottom: '5px'}">

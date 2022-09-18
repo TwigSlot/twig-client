@@ -24,7 +24,7 @@
           Welcome back {{ session.identity.traits.email }}
         </div>
         <div class="navbar-item">
-          <div class="list-item">
+          <div class="navbar-item">
             <a
               v-if="!session"
               class="navbar-item"
