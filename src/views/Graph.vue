@@ -61,24 +61,9 @@ function add_edge(s: string, t: string, uid: any) {
         uid: uid
     }
 }
-var edge_source_node: any = null;
 var selected_nodes = ref([]);
 var selected_edges = ref([]);
-function create_edge(s: any, t: any) {
-    const request_url = `${import.meta.env.VITE_API_URL}` +
-        `/project/${project_id.value}` +
-        `/new?item=relationship` +
-        `&a_id=${s.substring(4)}&b_id=${t.substring(4)}`
-    axios.post(request_url)
-        .then(response => {
-            graphData.edges.value[response.data.uid] = {
-                source: s,
-                target: t,
-                uid: response.data.uid
-            }
-        })
-    edge_source_node = null
-}
+
 
 function add_edge_raw(raw: any) {
     add_edge(`node${raw[0]}`, `node${raw[2]}`, raw[1].uid)
@@ -155,29 +140,42 @@ export default defineComponent({
                     });
                 (this.$store.state as any).selected_mode = 'move'
             } else if (selected_mode == 'add-edge') {
-                edge_source_node = null;
+                (this.$store.state as any).edge_source_node = null;
             }
         },
         handle_node_click: function (event: any) {
             const selected_mode = (this.$store.state as any).selected_mode
             if (selected_mode == 'add-edge') {
-                if (edge_source_node) {
-                    create_edge(edge_source_node, event.node);
+                if ((this.$store.state as any).edge_source_node) {
+                    this.create_edge((this.$store.state as any).edge_source_node, event.node);
                     (this.$store.state as any).selected_mode = 'move'
                 }
             } else {
-                edge_source_node = event.node
+                (this.$store.state as any).edge_source_node = event.node
             }
+        },
+        create_edge: function (s: any, t: any) {
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${project_id.value}` +
+                `/new?item=relationship` +
+                `&a_id=${s.substring(4)}&b_id=${t.substring(4)}`
+            axios.post(request_url)
+                .then(response => {
+                    graphData.edges.value[response.data.uid] = {
+                        source: s,
+                        target: t,
+                        uid: response.data.uid
+                    }
+                });
+            (this.$store.state as any).edge_source_node = null
         },
         handle_node_select: function (event: any) {
             const selected_mode = (this.$store.state as any).selected_mode
             if (selected_mode == 'add-edge') {
-                if (event.length == 0) edge_source_node = null;
-                else if (event.length == 1) {
-                    edge_source_node = event[0]
-                } else if (event.length == 2) {
-                    create_edge(event[0], event[1]);
-                    (this.$store.state as any).selected_mode = 'move'
+                if (event.length == 1) {
+                    (this.$store.state as any).edge_source_node = event[0]
+                }else {
+                    (this.$store.state as any).edge_source_node = null
                 }
             }
             selected_nodes.value = event
@@ -229,16 +227,10 @@ export default defineComponent({
             if (pause_key_down) return;
             if (e.key == 'e') {
                 this.$store.commit('update_selected_mode', 'add-edge')
-                if (selected_nodes.value.length == 2) {
-                    create_edge(selected_nodes.value[0], selected_nodes.value[1]);
-                    this.$store.commit('update_selected_mode', 'move')
-                }
             } else if (e.key == 'v') {
                 this.$store.commit('update_selected_mode', 'add-node')
             } else if (e.key == 'a') {
                 this.$store.commit('update_selected_mode', 'move')
-            } else if (e.key == 'd') {
-                this.$store.commit('update_selected_mode', 'delete')
             } else if (e.key == 'Backspace' || e.key == 'Delete') {
                 if (selected_nodes.value.length > 0 && confirm(`Delete ${selected_nodes.value.length} nodes?`)) {
                     for (const node of selected_nodes.value) {

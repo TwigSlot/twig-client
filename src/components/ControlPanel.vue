@@ -3,10 +3,14 @@
         <button class="button is-light" @click="$emit('home')">Home</button>
         <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
         <button class="button is-light" @click="$emit('save-locations')">Save Locations</button>
+        <div>
+            <text>Pressing delete will remove selected items. </text>
+            <text>{{ instructions }}</text>
+        </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import DropdownComponent from "./DropdownComponent.vue";
 
 const options = [
@@ -17,7 +21,7 @@ export default defineComponent({
     name: "ControlPanel",
     data() {
         return {
-            options
+            options,
         };
     },
     methods: {
@@ -31,6 +35,22 @@ export default defineComponent({
         document.addEventListener("keydown", (e) => {
             this.$emit("customkeydown", e);
         });
+    },
+    computed: {
+        instructions(){
+            const selected_mode = (this.$store.state as any).selected_mode
+            if(selected_mode == 'move'){
+                return 'Use your mouse to pan around, hover over nodes to view their data.'
+            }else if(selected_mode == 'add-node'){
+                return 'Click somewhere to add a node!'
+            }else if(selected_mode == 'add-edge'){
+                if((this.$store.state as any).edge_source_node){
+                    return 'Click on the target node.'
+                }else{
+                    return 'Click on the source node.'
+                }
+            }
+        }
     },
     components: { DropdownComponent }
 })
