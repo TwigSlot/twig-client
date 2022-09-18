@@ -4,13 +4,13 @@
       <button class="button is-primary is-light" @click="add_project">
         Add Project
       </button>
+      <button v-if="connection_status != 'connected'" class="button is-primary is-danger" @click="reconnect">
+        Failed to Connect! Click to retry
+      </button>
     </div>
-
-    <h5 :style="{ paddingBottom: '20px' }">{{ connection_status }}</h5>
 
     <table
       class="table is-bordered is-fullwidth"
-      v-for="project in showcased_projects"
       aria-describedby="project-table"
     >
       <thead>
@@ -21,7 +21,7 @@
           <th><abbr title="edit">Edit</abbr></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-for="project in showcased_projects" >
         <td>
           <a :href="'/project/' + `${project.project.uid}`">{{
             project.project.name
@@ -31,11 +31,11 @@
           {{ project.project.description }}
         </td>
         <td>
-          <a :href="'/user/' + `${project.owner}`">{{ project.owner }}</a>
+          <a :href="'/user/' + `${project.owner.kratos_user_id}`">{{ project.owner.first_name + ' ' + project.owner.last_name }}</a>
         </td>
         <td
           v-if="
-            project.owner == $store.state.kratos_user_id ||
+            project.owner.kratos_user_id == $store.state.kratos_user_id ||
             connection_status != 'connected'
           "
         >
@@ -44,7 +44,7 @@
               <button
                 class="button is-primary is-light is-small is-pulled-left"
                 v-if="
-                  project.owner == $store.state.kratos_user_id ||
+                  project.owner.kratos_user_id == $store.state.kratos_user_id ||
                   connection_status != 'connected'
                 "
                 @click="edit_project(project.project.uid)"
@@ -54,8 +54,8 @@
             </div>
             <div class="float-child">
               <button
-                class="button is-primary is-light is-small is-pulled-right"
-                v-if="project.owner == $store.state.kratos_user_id"
+                class="button is-primary is-light is-small is-pulled-left"
+                v-if="project.owner.kratos_user_id == $store.state.kratos_user_id"
                 @click="delete_project(project.project.uid)"
               >
                 Delete
@@ -63,6 +63,8 @@
             </div>
           </div>
         </td>
+        <td v-else></td>
+
       </tbody>
     </table>
   </div>
@@ -107,6 +109,9 @@ export default defineComponent({
     };
   },
   methods: {
+    reconnect: function(){
+      this.get_projects()
+    },
     add_project: function () {
       const request_url =
         `${import.meta.env.VITE_API_URL}` +

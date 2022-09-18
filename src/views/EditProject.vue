@@ -12,7 +12,7 @@
 
     <div class="control" :style="{ paddingBottom: '30px' }">
       <el-input
-        v-model="input"
+        v-model="project.name"
         size="large"
         placeholder="Project Name"
         @blur="handleBlur('name', $event)"
@@ -20,7 +20,7 @@
     </div>
     <div class="control">
       <el-input
-        v-model="textarea"
+        v-model="project.description"
         :autosize="{ minRows: 2, maxRows: 10 }"
         type="textarea"
         :placeholder="project.description"
@@ -46,8 +46,6 @@ import { defineComponent, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
 
 const project: any = ref({ id: 0, name: "Loading...", description: "" });
-const textarea = ref("");
-const input = ref("");
 
 export default defineComponent({
   name: "EditProject",
@@ -55,9 +53,7 @@ export default defineComponent({
   data() {
     return {
       project,
-      ArrowLeft,
-      textarea,
-      input,
+      ArrowLeft
     };
   },
   methods: {
