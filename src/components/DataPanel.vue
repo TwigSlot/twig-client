@@ -1,38 +1,38 @@
 <template>
-  <div class="info-panel-outer">
+  <div class="control">
     <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
-    <div class="control">
-      <input
-        class="input is-hovered is-small"
-        type="text"
-        placeholder="Name"
-        :value="data_panel.name"
-        @focus="pauseKeyDown"
-      />
-    </div>
-    <div class="control"  :style="{marginBottom: '5px'}">
-      <input
-        class="input is-hovered"
-        type="text"
-        placeholder="URL"
-        :value="data_panel.link"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('link', $event)"
-      />
-    </div>
-    <button class="button is-dark is-small" :href="data_panel.link">Open</button>
-    <div class="control" :style="{marginTop: '10px'}">
-      <textarea
-        class="textarea"
-        rows="5"
-        cols="50"
-        placeholder="Description"
-        :value="data_panel.description"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('description', $event)"
-      ></textarea>
-    </div>
 
+    <el-form
+      label-position="left"
+      label-width="100px"
+      :model="formLabelAlign"
+      style="max-width: 460px"
+    >
+      <el-form-item label="Name">
+        <el-input
+          v-model="formLabelAlign.name"
+          @focus="pauseKeyDown"
+        />
+      </el-form-item>
+      <el-form-item label="URL">
+        <el-input
+          v-model="formLabelAlign.region"
+          @focus="pauseKeyDown"
+          @blur="handleBlur('link', $event)"
+        />
+        <el-link type="primary" :href="data_panel.link" target="_blank">Open</el-link>
+      </el-form-item>
+      <el-form-item label="Description">
+        <el-input
+          v-model="textarea"
+          :autosize="{ minRows: 2, maxRows: 4 }"
+          type="textarea"
+          placeholder="Please input"
+          @focus="pauseKeyDown"
+          @blur="handleBlur('description', $event)"
+        />
+      </el-form-item>
+    </el-form>
     <div class="info-panel-inner">
       <div></div>
     </div>
@@ -43,14 +43,29 @@
 
 <script lang="ts">
 import axios from "axios";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 import graphData from "../graphData";
 
 const project_id: any = ref("");
+
+const formLabelAlign = reactive({
+  name: "",
+  region: "",
+  type: "",
+});
+
+const textarea = ref("");
+
 export default defineComponent({
   name: "DataPanel",
   setup() {},
   props: ["data_panel"],
+  data() {
+    return {
+      formLabelAlign,
+      textarea,
+    };
+  },
   mounted() {
     axios.defaults.headers.common["X-User"] = this.$store.state.kratos_user_id;
     project_id.value = this.$route.params.id;

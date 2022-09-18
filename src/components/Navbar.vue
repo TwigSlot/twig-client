@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav class="navbar base-container" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" href="/"> TWIGSLOT </a>
       <a
@@ -69,6 +69,12 @@
 </template>
 
 <style lang="scss" scoped>
+
+  .base-container {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
 .icon {
   margin-top: 10px;
 }

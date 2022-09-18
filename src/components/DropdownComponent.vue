@@ -1,16 +1,29 @@
 <template>
-    <div class="select">
-      <select :select="0">
-        <option  v-for="(item, index) in dropdownItem" v-bind:value="index">{{ item }}</option>
-      </select>
-    </div>
+  <el-select v-model="value" class="m-2" placeholder="Select" size="small" clearable>
+    <el-option
+      v-for="(item, index) in dropdownItem"
+      :key="index"
+      :label="item"
+      :value="item"
+    ></el-option>
+  </el-select>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { ref } from 'vue'
+
+const value = ref('')
+
+export default defineComponent({
   name: "DropdownComponent",
   props: {
-    dropdownItem: Array,
+    dropdownItem: Object,
   },
-};
+  data() {
+    return {
+      value
+    }
+  }
+});
 </script>
