@@ -3,7 +3,7 @@
     <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
     <div class="control">
       <input
-        class="input is-hovered is-small"
+        class="input is-hovered"
         type="text"
         placeholder="Name"
         :value="data_panel.name"
@@ -21,7 +21,7 @@
         @blur="handleBlur('link', $event)"
       />
     </div>
-    <button class="button is-dark is-small" :href="data_panel.link">Open</button>
+    <button class="button is-dark" :href="data_panel.link">Open</button>
     <div class="control" :style="{marginTop: '10px'}">
       <textarea
         class="textarea"
@@ -40,7 +40,12 @@
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.info-panel-outer {
+  font-family: 'Noto Sans', sans-serif;
+  padding: 1rem;
+}
+</style>
 
 <script lang="ts">
 import axios from "axios";
