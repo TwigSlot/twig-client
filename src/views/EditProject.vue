@@ -8,7 +8,7 @@
       </el-button-group>
     </div>
 
-    <h1 class="title is-3">Project ID: {{ project.id }}</h1>
+    <h1 class="title is-3 has-text-centered">Project ID: <span class="is-family-monospace">{{ project.id }}</span></h1>
 
     <div class="control" :style="{ paddingBottom: '30px' }">
       <el-input
@@ -33,6 +33,7 @@
 <style lang="scss" scoped>
 .main-container {
   margin: 20px !important;
+  font-family: 'Noto Sans', sans-serif;
 }
 
 .prev-page {
