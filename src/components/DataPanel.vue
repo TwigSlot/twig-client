@@ -42,8 +42,13 @@
 
 <style lang="scss" scoped>
 .info-panel-outer {
+  background-color: green;
+  h1 {
+    color: white;
+  }
   font-family: 'Noto Sans', sans-serif;
   padding: 1rem;
+  border-bottom-left-radius: 25px;
 }
 </style>
 

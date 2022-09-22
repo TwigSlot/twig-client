@@ -111,7 +111,6 @@ body {
 }
 
 .info-panel-outer {
-  background-color: greenyellow;
   position: relative;
   clear: left;
   float: right;
