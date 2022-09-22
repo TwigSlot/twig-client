@@ -76,6 +76,10 @@
 .list-item {
   padding-top: 10px;
 }
+
+nav {
+  font-family: 'Noto Sans', sans-serif;
+}
 </style>
 
 <script lang="ts">

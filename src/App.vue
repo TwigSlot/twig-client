@@ -72,6 +72,9 @@ export default defineComponent({
 
 
 <style>
+body {
+  font-family: 'Noto Sans', sans-serif;
+}
 #graph {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
