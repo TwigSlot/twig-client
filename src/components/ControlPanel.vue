@@ -3,7 +3,7 @@
         <button class="button is-light" @click="$emit('home')">Home</button>
         <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
         <button class="button is-light" @click="$emit('save-locations')">Save Locations</button>
-        <div>
+        <div id="information-box-thing">
             <text>Pressing delete will remove selected items. </text>
             <text>{{ instructions }}</text>
         </div>
@@ -55,10 +55,17 @@ export default defineComponent({
     components: { DropdownComponent }
 })
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .control-panel {
-    width: 60%;
+    #information-box-thing {
+      padding-left: 0.5rem;
+    }
+    width: 30%;
+    padding-bottom: 1rem;
+    border-bottom-right-radius: 25px;
     background-color: lightblue;
+    font-family: 'Noto Sans', sans-serif;
+
 }
 
 .flush-right {

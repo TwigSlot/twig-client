@@ -74,6 +74,8 @@
 <style lang="scss" scoped>
 .main-container {
   margin: 20px !important;
+  font-family: 'Noto Sans', sans-serif;
+
 }
 
 .button-container {
