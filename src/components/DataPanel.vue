@@ -1,37 +1,23 @@
 <template>
   <div class="info-panel-outer">
-    <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
+    <h1 class="title is-4">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
     <div class="control">
-      <input
-        class="input is-hovered"
-        type="text"
-        placeholder="Name"
-        :value="data_panel.name"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('name', $event)"
-      />
+      <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name"
+        @focus="pauseKeyDown" @blur="handleBlur('name', $event)" />
     </div>
-    <div class="control"  :style="{marginBottom: '5px'}">
-      <input
-        class="input is-hovered"
-        type="text"
-        placeholder="URL"
-        :value="data_panel.link"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('link', $event)"
-      />
+    <div class="control" :style="{marginBottom: '5px'}">
+      <input class="input is-hovered info-panel-item" type="text" placeholder="URL" :value="data_panel.link"
+        @focus="pauseKeyDown" @blur="handleBlur('link', $event)" />
     </div>
-    <button class="button is-dark" :href="data_panel.link">Open</button>
+    <div class="control">
+      <a target="_blank" :href="data_panel.link">
+        <button class="button is-dark">Open</button>
+      </a>
+      <text class="subtitle is-4 data-panel-item">{{ retrieval_status }}</text>
+    </div>
     <div class="control" :style="{marginTop: '10px'}">
-      <textarea
-        class="textarea"
-        rows="5"
-        cols="50"
-        placeholder="Description"
-        :value="data_panel.description"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('description', $event)"
-      ></textarea>
+      <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
+        @focus="pauseKeyDown" @blur="handleBlur('description', $event)"></textarea>
     </div>
 
     <div class="info-panel-inner">
@@ -41,14 +27,31 @@
 </template>
 
 <style lang="scss" scoped>
+
+.control{
+  align-items: center;
+  display: flex;
+}
+.data-panel-item {
+  margin-inline: 0.2rem;
+  color: white;
+}
+
 .info-panel-outer {
   background-color: green;
+
   h1 {
     color: white;
   }
-  font-family: 'Noto Sans', sans-serif;
+
+  font-family: 'Noto Sans',
+  sans-serif;
   padding: 1rem;
   border-bottom-left-radius: 25px;
+}
+
+.info-panel-item {
+  margin: 0.1rem;
 }
 </style>
 
@@ -58,13 +61,19 @@ import { defineComponent, ref } from "vue";
 import graphData from "../graphData";
 
 const project_id: any = ref("");
+const retrieval_status = ref("")
 export default defineComponent({
   name: "DataPanel",
-  setup() {},
+  setup() { },
   props: ["data_panel"],
   mounted() {
     axios.defaults.headers.common["X-User"] = this.$store.state.kratos_user_id;
     project_id.value = this.$route.params.id;
+  },
+  data() {
+    return {
+      retrieval_status
+    }
   },
   methods: {
     handleBlur: async function (property: string, e: any) {
@@ -86,6 +95,7 @@ export default defineComponent({
           link = "",
           description = "";
         try {
+          retrieval_status.value = "Retrieving website info..."
           const response = await axios.get(autofill_request_url);
           name = response.data.title;
           link = response.data.url;
@@ -108,17 +118,22 @@ export default defineComponent({
       request_url_post =
         request_url_post.substring(0, requestLengthLimit) +
         (request_url_post.length > requestLengthLimit ? "..." : "");
+      retrieval_status.value = "Saving..."
       axios.post(request_url_pre + request_url_post).then((response) => {
         console.log(response.data);
         graphData.nodes.value[`node${response.data.uid}`] = response.data;
         if (this.$props.data_panel.uid == response.data.uid) {
           this.$emit("updatedDataPanel");
         }
+        retrieval_status.value = "Saved!"
+        setTimeout(() => {
+          retrieval_status.value = ""
+        }, 1000)
       });
     },
-    onInputPropertyName: function () {},
-    onInputPropertyValue: function () {},
-    onInputLabel: function () {},
+    onInputPropertyName: function () { },
+    onInputPropertyValue: function () { },
+    onInputLabel: function () { },
     pauseKeyDown: function () {
       this.$emit("pauseKeyDown");
     },

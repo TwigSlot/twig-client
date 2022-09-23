@@ -101,6 +101,7 @@ export default defineComponent({
     data() {
         return {
             graph_ref,
+            control_panel_ref,
             project_id,
             graphData,
             dataPanel,
@@ -110,6 +111,10 @@ export default defineComponent({
                     console.log(type, event)
                     if (type == 'node:pointerover') {
                         dataPanel.value = graphData.nodes.value[event.node]
+                    } else if (type == 'node:pointerout'){
+                        if(selected_nodes.value){
+                            dataPanel.value = graphData.nodes.value[selected_nodes.value[0]]
+                        }
                     } else if (type == 'view:click') {
                         this.handle_view_click(event)
                     } else if (type == 'node:select') {
@@ -210,11 +215,26 @@ export default defineComponent({
                     y: node_pos_raw[n].y,
                 }
             }
-            console.log(node_pos)
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${project_id.value}` +
-                `/positions/update`
-            axios.post(request_url, node_pos)
+                `/positions/update`;
+            const cp_ref : any= (this.$refs.control_panel_ref as any);
+            cp_ref.save_locations_status = 'saving...'
+            axios.post(request_url, node_pos).then((response) => {
+                if(response.status == 200){
+                    (cp_ref).save_locations_status = 'saved'
+                    setTimeout(() => { 
+                        (cp_ref).save_locations_status = ''
+                    }, 1000)
+                }else{
+                    throw 'err'
+                }
+            }).catch((error) => {
+                (cp_ref).save_locations_status = 'error!'
+                setTimeout(() => { 
+                    (cp_ref).save_locations_status = ''
+                }, 1000)
+            })
         },
         get_items,
         add_node_with_mouse: function (raw: any, e: any) {
