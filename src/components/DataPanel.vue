@@ -1,6 +1,6 @@
 <template>
   <div class="info-panel-outer">
-    <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
+    <h1 class="title is-4">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
     <div class="control">
       <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name"
         @focus="pauseKeyDown" @blur="handleBlur('name', $event)" />
