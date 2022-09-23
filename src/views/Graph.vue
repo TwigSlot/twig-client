@@ -112,7 +112,7 @@ export default defineComponent({
                     if (type == 'node:pointerover') {
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'node:pointerout'){
-                        if(selected_nodes.value){
+                        if(selected_nodes.value.length > 0){
                             dataPanel.value = graphData.nodes.value[selected_nodes.value[0]]
                         }
                     } else if (type == 'view:click') {
