@@ -2,36 +2,19 @@
   <div class="info-panel-outer">
     <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
     <div class="control">
-      <input
-        class="input is-hovered"
-        type="text"
-        placeholder="Name"
-        :value="data_panel.name"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('name', $event)"
-      />
+      <input class="input is-hovered" type="text" placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown"
+        @blur="handleBlur('name', $event)" />
     </div>
-    <div class="control"  :style="{marginBottom: '5px'}">
-      <input
-        class="input is-hovered"
-        type="text"
-        placeholder="URL"
-        :value="data_panel.link"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('link', $event)"
-      />
+    <div class="control" :style="{marginBottom: '5px'}">
+      <input class="input is-hovered" type="text" placeholder="URL" :value="data_panel.link" @focus="pauseKeyDown"
+        @blur="handleBlur('link', $event)" />
     </div>
-    <button class="button is-dark" :href="data_panel.link">Open</button>
+    <a :href="data_panel.link">
+      <button class="button is-dark">Open</button>
+    </a>
     <div class="control" :style="{marginTop: '10px'}">
-      <textarea
-        class="textarea"
-        rows="5"
-        cols="50"
-        placeholder="Description"
-        :value="data_panel.description"
-        @focus="pauseKeyDown"
-        @blur="handleBlur('description', $event)"
-      ></textarea>
+      <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
+        @focus="pauseKeyDown" @blur="handleBlur('description', $event)"></textarea>
     </div>
 
     <div class="info-panel-inner">
@@ -43,10 +26,13 @@
 <style lang="scss" scoped>
 .info-panel-outer {
   background-color: green;
+
   h1 {
     color: white;
   }
-  font-family: 'Noto Sans', sans-serif;
+
+  font-family: 'Noto Sans',
+  sans-serif;
   padding: 1rem;
   border-bottom-left-radius: 25px;
 }
@@ -60,7 +46,7 @@ import graphData from "../graphData";
 const project_id: any = ref("");
 export default defineComponent({
   name: "DataPanel",
-  setup() {},
+  setup() { },
   props: ["data_panel"],
   mounted() {
     axios.defaults.headers.common["X-User"] = this.$store.state.kratos_user_id;
@@ -116,9 +102,9 @@ export default defineComponent({
         }
       });
     },
-    onInputPropertyName: function () {},
-    onInputPropertyValue: function () {},
-    onInputLabel: function () {},
+    onInputPropertyName: function () { },
+    onInputPropertyValue: function () { },
+    onInputLabel: function () { },
     pauseKeyDown: function () {
       this.$emit("pauseKeyDown");
     },
