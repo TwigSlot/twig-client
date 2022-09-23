@@ -2,11 +2,11 @@
   <div class="info-panel-outer">
     <h1 class="title is-4">ID : {{ data_panel.uid }}</h1>
     <div class="control">
-      <input class="input is-hovered" type="text" placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown"
+      <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name" @focus="pauseKeyDown"
         @blur="handleBlur('name', $event)" />
     </div>
     <div class="control" :style="{marginBottom: '5px'}">
-      <input class="input is-hovered" type="text" placeholder="URL" :value="data_panel.link" @focus="pauseKeyDown"
+      <input class="input is-hovered info-panel-item" type="text" placeholder="URL" :value="data_panel.link" @focus="pauseKeyDown"
         @blur="handleBlur('link', $event)" />
     </div>
     <a :href="data_panel.link">
@@ -35,6 +35,9 @@
   sans-serif;
   padding: 1rem;
   border-bottom-left-radius: 25px;
+}
+.info-panel-item{
+  margin: 0.1rem;
 }
 </style>
 

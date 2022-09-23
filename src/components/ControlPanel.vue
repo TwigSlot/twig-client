@@ -1,10 +1,13 @@
 <template>
     <div class="control-panel">
-        <button class="button is-light" @click="$emit('home')">Home</button>
-        <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
-        <button class="button is-light" @click="$emit('save-locations')">Save Locations</button>
+        <div id="control-box">
+            <button class="button is-light control-box-item" @click="$emit('home')">Center</button>
+            <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
+            <button class="button is-light control-box-item" @click="$emit('save-locations')">Save Locations </button>
+            <text class="title is-4 control-box-item">{{ save_locations_status }}</text>
+        </div>
         <div id="information-box-thing">
-            <text>Pressing delete will remove selected items. </text>
+            <text>Pressing <i>delete</i> will remove selected items. </text><br>
             <text>{{ instructions }}</text>
         </div>
     </div>
@@ -17,11 +20,13 @@ const options = [
     { name: 'add-node', label: 'Add Vertex (V)' },
     { name: 'add-edge', label: 'Add Edge (E)', },
     { name: 'move', label: 'Look Around (A)' }];
+const save_locations_status = ref("")
 export default defineComponent({
     name: "ControlPanel",
     data() {
         return {
             options,
+            save_locations_status,
         };
     },
     methods: {
@@ -59,13 +64,25 @@ export default defineComponent({
 .control-panel {
     #information-box-thing {
       padding-left: 0.5rem;
+      padding-top: 0.5rem;
     }
-    width: 30%;
+    #control-box{
+      padding-left: 0.5rem;
+      align-items: center;
+      display: flex;
+      padding-top: 0.5rem;
+      .control-box-item{
+        margin-inline: 0.2rem;
+      }
+    }
+    width: 40%;
     padding-bottom: 1rem;
     border-bottom-right-radius: 25px;
     background-color: lightblue;
     font-family: 'Noto Sans', sans-serif;
-
+}
+i {
+    font-style: italic;
 }
 
 .flush-right {
