@@ -4,7 +4,7 @@
             <button class="button is-light control-box-item" @click="$emit('home')">Center</button>
             <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
             <button class="button is-light control-box-item" @click="$emit('save-locations')">Save Locations </button>
-            <text class="title is-4 control-box-item">{{ save_locations_status }}</text>
+            <text class="subtitle is-4 control-box-item">{{ save_locations_status }}</text>
         </div>
         <div id="information-box-thing">
             <text>Pressing <i>delete</i> will remove selected items. </text><br>

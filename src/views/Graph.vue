@@ -214,20 +214,21 @@ export default defineComponent({
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${project_id.value}` +
                 `/positions/update`;
-            (this.$refs.control_panel_ref as any).save_locations_status = 'saving...'
+            const cp_ref : any= (this.$refs.control_panel_ref as any);
+            cp_ref.save_locations_status = 'saving...'
             axios.post(request_url, node_pos).then((response) => {
                 if(response.status == 200){
-                    (this.$refs.control_panel_ref as any).save_locations_status = 'saved'
-                    setInterval(() => { 
-                        (this.$refs.control_panel_ref as any).save_locations_status = ''
+                    (cp_ref).save_locations_status = 'saved'
+                    setTimeout(() => { 
+                        (cp_ref).save_locations_status = ''
                     }, 1000)
                 }else{
                     throw 'err'
                 }
             }).catch((error) => {
-                (this.$refs.control_panel_ref as any).save_locations_status = 'error!'
-                setInterval(() => { 
-                    (this.$refs.control_panel_ref as any).save_locations_status = ''
+                (cp_ref).save_locations_status = 'error!'
+                setTimeout(() => { 
+                    (cp_ref).save_locations_status = ''
                 }, 1000)
             })
         },
