@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`twig.tchlabs.net`)
+    - match: Host(`twigslot.com`)
       kind: Rule
       services:
         - name: nginx-service
@@ -15,4 +15,4 @@ spec:
   tls:
     certResolver: myresolver
     domains: 
-    - main: twig.tchlabs.net
+    - main: twigslot.com
