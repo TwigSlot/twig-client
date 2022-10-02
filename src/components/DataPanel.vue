@@ -1,15 +1,15 @@
 <template>
   <div class="info-panel-outer">
-    <h1 class="title is-4">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
+    <h1 class="title is-4 has-text-white">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
     <div class="control">
       <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name"
         @focus="pauseKeyDown" @blur="handleBlur('name', $event)" v-show="in_edit_mode" />
-      <p id="rendered-name" v-show="!in_edit_mode">{{data_panel.name}}</p>
+      <p id="rendered-name" v-show="!in_edit_mode">Name: {{data_panel.name}}</p>
     </div>
     <div class="control" :style="{marginBottom: '5px'}">
       <input class="input is-hovered info-panel-item" type="text" placeholder="URL" :value="data_panel.link"
         @focus="pauseKeyDown" @blur="handleBlur('link', $event)" v-show="in_edit_mode" />
-      <p id="rendered-link" v-show="!in_edit_mode">{{data_panel.link}}</p>
+      <p id="rendered-link" v-show="!in_edit_mode">URL: {{data_panel.link}}</p>
     </div>
     <div class="control">
       <a target="_blank" :href="data_panel.link">
@@ -20,7 +20,7 @@
     <div class="control" :style="{marginTop: '10px', marginBottom: '10px'}">
       <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
         @focus="pauseKeyDown" @blur="handleBlur('description', $event)" v-show="in_edit_mode"></textarea>
-      <p id="rendered-description" v-show="!in_edit_mode" class="has-text-white">{{data_panel.description}}</p>
+      <p id="rendered-description" v-show="!in_edit_mode" class="has-text-white">Description: {{data_panel.description}}</p>
     </div>
     <button class="button" :class="{ 'is-success': in_edit_mode, 'is-info': !in_edit_mode }"
             @click="in_edit_mode = !in_edit_mode">{{ in_edit_mode ? "Save": "Edit"}}</button>
@@ -44,10 +44,7 @@
 
 .info-panel-outer {
   background-color: green;
-
-  h1 {
-    color: white;
-  }
+  color: white;
 
   font-family: 'Noto Sans',
   sans-serif;
