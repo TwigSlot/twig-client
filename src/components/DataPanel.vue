@@ -20,9 +20,10 @@
     <div class="control" :style="{marginTop: '10px', marginBottom: '10px'}">
       <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
         @focus="pauseKeyDown" @blur="handleBlur('description', $event)" v-show="in_edit_mode"></textarea>
-      <p id="rendered-description" v-show="!in_edit_mode" class="has-text-white">Description thing{{data_panel.description}}</p>
+      <p id="rendered-description" v-show="!in_edit_mode" class="has-text-white">{{data_panel.description}}</p>
     </div>
-    <button class="button is-dark" @click="">Save</button>
+    <button class="button" :class="{ 'is-success': in_edit_mode, 'is-info': !in_edit_mode }"
+            @click="in_edit_mode = !in_edit_mode">{{ in_edit_mode ? "Save": "Edit"}}</button>
 
     <div class="info-panel-inner">
       <div></div>
