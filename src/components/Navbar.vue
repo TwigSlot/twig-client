@@ -17,7 +17,9 @@
 
     <NavBurger>
       <div class="navbar-start">
-        <a class="navbar-item" href="/explore" :style="{ marginLeft: '10px'}"> Explore </a>
+        <a class="navbar-item" href="/explore" :style="{ marginLeft: '10px' }">
+          Explore
+        </a>
       </div>
       <div class="navbar-end">
         <div v-if="session" class="navbar-item">
@@ -28,6 +30,7 @@
             <a
               v-if="!session"
               class="navbar-item"
+              :style="{ padding: 0 }"
               :href="authBasePath + '/login'"
             >
               Login
@@ -54,15 +57,17 @@
             >
               Profile
             </a>
+            <a
+              href="https://github.com/twigslot"
+              :style="{ marginLeft: '20px' }"
+            >
+              <font-awesome-icon
+                icon="fa-brands fa-github"
+                class="icon"
+              ></font-awesome-icon>
+            </a>
           </div>
         </div>
-
-        <a class="navbar-item" href="https://github.com/twigslot" :style="{ marginRight: '20px'}">
-          <font-awesome-icon
-            icon="fa-brands fa-github"
-            class="icon"
-          ></font-awesome-icon>
-        </a>
       </div>
     </NavBurger>
   </nav>
@@ -78,7 +83,7 @@
 }
 
 nav {
-  font-family: 'Noto Sans', sans-serif;
+  font-family: "Noto Sans", sans-serif;
 }
 </style>
 

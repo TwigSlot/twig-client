@@ -22,9 +22,10 @@ const routes = [
         component: Graph
     },
     {
-        path: '/project-edit/:id',
+        path: '/project-edit',
         name: 'EditProject',
-        component: EditProject
+        component: EditProject,
+        props: (route: any) => ({id: route.query.id})
     },  
     {
         path: '/user/:id', // note id could be the kratos_user_id or username
