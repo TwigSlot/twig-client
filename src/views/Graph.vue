@@ -9,7 +9,7 @@
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
-    <DecoPanelVue ref="deco_panel_ref" :data_panel="dataPanel"></DecoPanelVue>
+    <DecoPanelVue ref="deco_panel_ref" :data_panel="dataPanel" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
