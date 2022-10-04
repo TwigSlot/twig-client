@@ -48,14 +48,8 @@ function delete_edge(edge: any) {
         })
 }
 function add_node(raw: any) {
-<<<<<<< HEAD
     if(!('color' in raw)) raw.color = 'blue'
     if(!('size' in raw)) raw.size = 20
-||||||| ad87ade
-=======
-    if(!('color' in raw)) raw.color = 'blue'
-    if(!('size' in raw)) raw.size = 10
->>>>>>> origin/coloring-alt
     graphData.nodes.value[`node${raw.uid}`] = raw
     if('pos_x' in raw && 'pos_y' in raw){
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
