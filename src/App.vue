@@ -110,6 +110,13 @@ body {
   float: left;
 }
 
+.deco-panel {
+  background-color: pink;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
 .info-panel-outer {
   position: relative;
   clear: left;
