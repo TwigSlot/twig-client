@@ -9,11 +9,13 @@
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
+    <DecoPanelVue></DecoPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
 import DataPanelVue from "../components/DataPanel.vue";
 import ControlPanelVue from "../components/ControlPanel.vue";
+import DecoPanelVue from "../components/DecoPanel.vue";
 import { defineComponent, reactive, ref } from "vue";
 import graphData from "../graphData"
 var dataPanel: any = ref({});
@@ -96,7 +98,8 @@ export default defineComponent({
     name: "Graph",
     components: {
         DataPanelVue,
-        ControlPanelVue
+        ControlPanelVue,
+        DecoPanelVue
     },
     data() {
         return {
@@ -158,6 +161,9 @@ export default defineComponent({
             } else {
                 (this.$store.state as any).edge_source_node = event.node
             }
+            console.log('onclick', event.node)
+            console.log('it is', graphData.nodes.value[event.node])
+            graphData.nodes.value[event.node].color = "gray"
         },
         create_edge: function (s: any, t: any) {
             const request_url = `${import.meta.env.VITE_API_URL}` +
