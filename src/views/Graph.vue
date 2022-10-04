@@ -49,7 +49,7 @@ function delete_edge(edge: any) {
 }
 function add_node(raw: any) {
     if(!('color' in raw)) raw.color = 'blue'
-    if(!('size' in raw)) raw.size = 10
+    if(!('size' in raw)) raw.size = 20
     graphData.nodes.value[`node${raw.uid}`] = raw
     if('pos_x' in raw && 'pos_y' in raw){
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
@@ -114,8 +114,8 @@ export default defineComponent({
             eventHandlers: {
                 // wildcard: capture all events
                 "*": (type: string, event: any) => {
-                    console.log(type, event)
                     if (type == 'node:pointerover') {
+                        console.log(type, graphData.nodes.value[event.node])
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'node:pointerout'){
                         if(selected_nodes.value.length > 0){
