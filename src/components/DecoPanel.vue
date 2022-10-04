@@ -5,6 +5,9 @@
                 <h1 class="title is-4 deco-text">
                     Tags:
                 </h1>
+                <div id="tags-list">
+                    <text class="subtitle tag">hi</text>
+                </div>
                 <input class="input is-hovered info-panel-item" type="text" placeholder="Color"
                     v-model="data_panel.color" @focus="pauseKeyDown" @blur="handleBlur()" />
             </div>
@@ -15,7 +18,7 @@
             </h1>
             <div class="slider-demo-block">
                 <span class="demonstration">Customized initial value</span>
-                <el-slider v-model="data_panel.size"/>
+                <el-slider v-model="data_panel.size" />
             </div>
         </div>
     </div>
@@ -24,6 +27,10 @@
 <style lang="scss" scoped>
 .deco-text {
     color: blue;
+}
+
+.tag  {
+    margin-inline: 1rem;
 }
 
 .deco-panel {
