@@ -36,6 +36,9 @@ var configs = vNG.defineConfigs({
   },
   node: {
     selectable: true,
+    normal: {
+      color: node => node.color,
+    }
   },
   edge: {
     selectable: true,
