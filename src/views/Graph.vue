@@ -9,7 +9,7 @@
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
-    <DecoPanelVue></DecoPanelVue>
+    <DecoPanelVue ref="deco_panel_ref" :data_panel="dataPanel"></DecoPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
@@ -23,6 +23,7 @@ var dataPanel: any = ref({});
 const project_id: any = ref("");
 const graph_ref: any = ref();
 const control_panel_ref: any = ref();
+const deco_panel_ref: any = ref();
 var pause_key_down: boolean = false;
 
 function delete_node(node: any) {
@@ -47,6 +48,8 @@ function delete_edge(edge: any) {
         })
 }
 function add_node(raw: any) {
+    if(!('color' in raw)) raw.color = 'blue'
+    if(!('size' in raw)) raw.size = 10
     graphData.nodes.value[`node${raw.uid}`] = raw
     if('pos_x' in raw && 'pos_y' in raw){
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
@@ -161,9 +164,6 @@ export default defineComponent({
             } else {
                 (this.$store.state as any).edge_source_node = event.node
             }
-            console.log('onclick', event.node)
-            console.log('it is', graphData.nodes.value[event.node])
-            graphData.nodes.value[event.node].color = "gray"
         },
         create_edge: function (s: any, t: any) {
             const request_url = `${import.meta.env.VITE_API_URL}` +

@@ -1,14 +1,21 @@
 <template>
     <div class="deco-panel">
         <div id="deco-box">
-            <h1 class="title is-4 deco-text">
-                Tags:
-            </h1>
+            <div class="deco-item">
+                <h1 class="title is-4 deco-text">
+                    Tags:
+                </h1>
+                <input class="input is-hovered info-panel-item" type="text" placeholder="Name" v-model="data_panel.color"/>
+            </div>
         </div>
         <div id="deco-box">
             <h1 class="title is-4 deco-text">
                 Size:
             </h1>
+            <div class="slider-demo-block">
+                <span class="demonstration">Customized initial value</span>
+                <el-slider v-model="data_panel.size" />
+            </div>
         </div>
     </div>
 </template>
@@ -42,5 +49,10 @@ import { defineComponent, ref } from "vue";
 
 export default defineComponent({
     name: "DecoPanel",
+    props: ["data_panel"],
+    data() {
+        return {
+        }
+    }
 });
 </script>
