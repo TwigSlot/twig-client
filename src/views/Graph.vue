@@ -9,7 +9,7 @@
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
-    <DecoPanelVue ref="deco_panel_ref" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
+    <DecoPanelVue ref="deco_panel_ref" @color_nodes="color_nodes" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
@@ -135,6 +135,11 @@ export default defineComponent({
         }
     },
     methods: {
+        color_nodes: function(arr: any, color: any){
+            for(const x of arr){
+                graphData.nodes.value[`node${x}`].color = color
+            }
+        },
         updatedDataPanel: function(){
             dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`] 
         },

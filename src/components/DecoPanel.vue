@@ -10,7 +10,7 @@
                         v-for="tag in tags_list" 
                         class="subtitle tag"
                         :style="{'background-color': (tag as any).color}"
-                        @click="tag_focus = tag">
+                        @click="click_tag(tag)">
                         {{(tag as any).name}}
                     </text>
                 </div>
@@ -212,6 +212,21 @@ export default defineComponent({
         update_tag_name: function(e: any){
             console.log(e)
         },
+        click_tag: function(tag: any){
+            (tag_focus as any).value = tag
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${this.$props.project_id}` +
+                `/tag/${(tag_focus as any).value.uid}` +
+                `/list_resources`
+            axios.get(request_url)
+                .then((response) => {
+                    var arr = []
+                    for(const i of response.data){
+                        arr.push(i.uid)
+                    }
+                    this.$emit('color_nodes', arr, (tag_focus as any).value.color)
+                })
+        }
     },
     data() {
         return {
