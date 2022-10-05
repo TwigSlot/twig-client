@@ -18,7 +18,7 @@
                 <input class="input is-hovered info-panel-item" type="text" placeholder="Color"
                     :value="tag_color" @input="preview_tag_color" @change="update_tag_color" @focus="pauseKeyDown" @blur="handleBlur()" />
                 <input class="input is-hovered info-panel-item" type="text" placeholder="Tag" 
-                    :value="tag_name" @change="update_tag_name"
+                    v-model="tag_name" @change="update_tag_name"
                     autocomplete="on" list="autocomplete_tags" />
                 <datalist id="autocomplete_tags">
                     <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
@@ -74,15 +74,14 @@
 <script lang="ts">
 import { assert } from "@vue/compiler-core";
 import axios from "axios";
-import { ta } from "element-plus/es/locale";
 import { defineComponent, ref } from "vue";
 
-const tag_name = ref("")
 const tags_list = ref([]);
 const tags_suggestions_list = ref([]);
 const showing_tags_for = ref("");
 const disable_add = ref(false);
 const tag_focus = ref(null);
+const tag_name_input = ref("");
 export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
@@ -101,9 +100,9 @@ export default defineComponent({
             else return null
         },
         add_tag: async function () {
-            if (tag_name.value == "") return
+            if (this.tag_name_input == "") return
             const tags = await this.list_all_tags(false)
-            var first_tag_matching_name = this.tag_exists(tags, tag_name.value)
+            var first_tag_matching_name = this.tag_exists(tags, this.tag_name_input)
             console.log(first_tag_matching_name)
             if (first_tag_matching_name == null) {
                 first_tag_matching_name = await this.create_tag().then((res) => { return res; })
@@ -120,10 +119,10 @@ export default defineComponent({
                 })
         },
         create_tag: async function () {
-            if (tag_name.value == "") return
+            if (this.tag_name_input == "") return
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/create_tag?name=${tag_name.value}`
+                `/create_tag?name=${this.tag_name_input}`
             return axios.post(request_url)
                 .then((response) => {
                     return response.data
@@ -161,14 +160,14 @@ export default defineComponent({
         delete_tag: async function () {
             const tags = await this.list_all_tags(false).then((arr) => { return arr; })
             try {
-                assert(!isNaN(parseInt(tag_name.value)))
+                assert(!isNaN(parseInt(this.tag_name_input)))
             } catch {
                 return
             }
-            if (tags.filter((tag: any) => tag.uid == parseInt(tag_name.value)).length == 0) return
+            if (tags.filter((tag: any) => tag.uid == parseInt(this.tag_name_input)).length == 0) return
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/delete_tag?uid=${tag_name.value}`
+                `/delete_tag?uid=${this.tag_name_input}`
             axios.post(request_url)
                 .then((response) => {
                 })
@@ -220,7 +219,8 @@ export default defineComponent({
             tags_suggestions_list,
             showing_tags_for,
             disable_add,
-            tag_focus
+            tag_focus,
+            tag_name_input
         }
     },
     watch: {
@@ -232,8 +232,13 @@ export default defineComponent({
         }
     },
     computed: {
-        tag_name(){
-            return tag_focus.value == null ? '' : (tag_focus as any).value.name
+        tag_name: {
+            get: function(){
+                return tag_focus.value == null ? '' : (tag_focus as any).value.name
+            },
+            set: function(nv: string) {
+                this.tag_name_input = nv
+            }
         },
         tag_color(){
             return tag_focus.value == null ? '' : (tag_focus as any).value.color
