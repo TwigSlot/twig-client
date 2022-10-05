@@ -111,7 +111,7 @@ body {
 }
 
 .deco-panel {
-  background-color: pink;
+  background-color: yellowgreen;
   position: fixed;
   bottom: 0;
   right: 0;

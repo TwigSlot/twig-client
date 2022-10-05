@@ -6,14 +6,19 @@
                     Tags: {{ showing_tags_for }}
                 </h1>
                 <div id="tags-list">
-                    <text @contextmenu.prevent="dissociate_tag((tag as any).name)" v-for="tag in tags_list" class="subtitle tag">
+                    <text @contextmenu.prevent="dissociate_tag((tag as any).name)" 
+                        v-for="tag in tags_list" 
+                        class="subtitle tag"
+                        :style="{'background-color': (tag as any).color}"
+                        @click="tag_focus = tag">
                         {{(tag as any).name}}
                     </text>
                 </div>
                 <br>
                 <input class="input is-hovered info-panel-item" type="text" placeholder="Color"
-                    v-model="data_panel.color" @focus="pauseKeyDown" @blur="handleBlur()" />
-                <input class="input is-hovered info-panel-item" type="text" placeholder="Tag" v-model="tag_name"
+                    :value="tag_color" @input="preview_tag_color" @change="update_tag_color" @focus="pauseKeyDown" @blur="handleBlur()" />
+                <input class="input is-hovered info-panel-item" type="text" placeholder="Tag" 
+                    :value="tag_name" @change="update_tag_name"
                     autocomplete="on" list="autocomplete_tags" />
                 <datalist id="autocomplete_tags">
                     <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
@@ -77,6 +82,7 @@ const tags_list = ref([]);
 const tags_suggestions_list = ref([]);
 const showing_tags_for = ref("");
 const disable_add = ref(false);
+const tag_focus = ref(null);
 export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
@@ -182,22 +188,39 @@ export default defineComponent({
                 `/dissociate_tag?tag_uid=${(first_tag_matching_name as any).uid}`
             axios.post(request_url)
                 .then((response) => {
-                    console.log(response.data)
                     this.list_tags()
                 })
         },
         filter_suggestions: function () {
             tags_suggestions_list.value = tags_suggestions_list.value.filter((v: any) =>
                 (this.tag_exists(tags_list.value, v.name) == null))
-        }
+        },
+        update_tag_color: function(e: any){
+            if(tag_focus.value == null) return
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${this.$props.project_id}` +
+                `/tag/${(tag_focus as any).value.uid}` +
+                `/update_color?color=${e.target.value}`
+            axios.post(request_url)
+                .then((response) => {
+                    tag_focus.value = response.data
+                })
+        },
+        preview_tag_color: function(e: any){
+            if(tag_focus.value == null) return
+            (tag_focus as any).value.color = e.target.value
+        },
+        update_tag_name: function(e: any){
+            console.log(e)
+        },
     },
     data() {
         return {
-            tag_name,
             tags_list,
             tags_suggestions_list,
             showing_tags_for,
-            disable_add
+            disable_add,
+            tag_focus
         }
     },
     watch: {
@@ -206,6 +229,14 @@ export default defineComponent({
             await this.list_all_tags(false)
             this.filter_suggestions()
             showing_tags_for.value = "Node " + new_value
+        }
+    },
+    computed: {
+        tag_name(){
+            return tag_focus.value == null ? '' : (tag_focus as any).value.name
+        },
+        tag_color(){
+            return tag_focus.value == null ? '' : (tag_focus as any).value.color
         }
     }
 });
