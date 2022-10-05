@@ -17,7 +17,7 @@
                     <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as any).uid})`}}</option>
                 </datalist>
                 <input class="button is-primary" type="button" value="Add Tag" @click="add_tag" />
-                <input class="button is-primary" type="button" value="List ALL Tags" @click="list_all_tags" />
+                <input class="button is-primary" type="button" value="List ALL Tags" @click="list_all_tags(true)" />
                 <input class="button is-primary" type="button" value="Delete Tag (by uid)" @click="delete_tag" />
             </div>
         </div>
@@ -81,16 +81,19 @@ export default defineComponent({
             this.$emit("pauseKeyDown");
         },
         // checks whether name_of_tag is inside tags
+        // returning the first one if it does
         tag_exists: function(tags: any, name_of_tag: string) {
             const tags_matching_name = tags.filter((tag : any) => tag.name == name_of_tag)
-            if(tags_matching_name.length == 0) return tags_matching_name[0]
+            if(tags_matching_name.length > 0) return tags_matching_name[0]
             else return null
         },
         add_tag: async function (){
             if(tag_name.value == "") return
             const tags = await this.list_all_tags(false)
             var first_tag_matching_name = this.tag_exists(tags, tag_name.value)
+            console.log(first_tag_matching_name)
             if(first_tag_matching_name == null){
+                console.log('creating')
                 first_tag_matching_name = await this.create_tag().then((res) => {return res;})
             }
             const resource_id = this.$props.data_panel.uid;
@@ -127,7 +130,7 @@ export default defineComponent({
                     return response.data
                 })
         },
-        list_all_tags: async function (update_tags_list = true) {
+        list_all_tags: async function (update_tags_list: boolean) {
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/list_all_tags`
@@ -139,7 +142,7 @@ export default defineComponent({
                 })
         },
         delete_tag: async function () {
-            const tags = await this.list_all_tags().then((arr) => {return arr;})
+            const tags = await this.list_all_tags(false).then((arr) => {return arr;})
             try{
                 assert(!isNaN(parseInt(tag_name.value)))
             }catch{
@@ -168,6 +171,7 @@ export default defineComponent({
     watch: {
         'data_panel.uid'(new_value){
             this.list_tags()
+            this.list_all_tags(false)
         }
     }
 });
