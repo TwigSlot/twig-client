@@ -17,7 +17,7 @@
                     <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
                     any).uid})`}}</option>
                 </datalist>
-                <input class="button is-primary" type="button" value="Add Tag" @click="add_tag" />
+                <input class="button is-primary" type="button" value="Add Tag" @click="add_tag" :disabled="disable_add"/>
                 <input class="button is-primary" type="button" value="List ALL Tags in Project" @click="list_all_tags(true)" />
                 <input class="button is-primary" type="button" value="Delete Tag (by uid)" @click="delete_tag" />
             </div>
@@ -72,6 +72,7 @@ const tag_name = ref("")
 const tags_list = ref([]);
 const tags_suggestions_list = ref([]);
 const showing_tags_for = ref("");
+const disable_add = ref(false);
 export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
@@ -129,6 +130,7 @@ export default defineComponent({
             return axios.get(request_url)
                 .then((response) => {
                     tags_list.value = response.data
+                    disable_add.value = false;
                     return response.data
                 })
         },
@@ -141,6 +143,7 @@ export default defineComponent({
                     if (update_tags_list) {
                         tags_list.value = response.data
                         showing_tags_for.value = "Entire Project"
+                        disable_add.value = true
                     }
                     tags_suggestions_list.value = response.data
                     return response.data
@@ -187,7 +190,8 @@ export default defineComponent({
             tag_name,
             tags_list,
             tags_suggestions_list,
-            showing_tags_for
+            showing_tags_for,
+            disable_add
         }
     },
     watch: {
