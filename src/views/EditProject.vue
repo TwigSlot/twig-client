@@ -9,7 +9,7 @@
     </div>
 
     <h1 class="title is-3 has-text-centered">
-      Project ID: <span class="is-family-monospace">{{ $route.query.id }}</span>
+      Project ID: <span class="is-family-monospace">{{ project.id }}</span>
     </h1>
 
     <div class="control" :style="{ paddingBottom: '30px' }">
@@ -48,11 +48,12 @@ import axios from "axios";
 import { defineComponent, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
 
-const project: any = { id: 0, name: "Loading...", description: "" };
+const project: any = ref({ id: 0, name: "Loading...", description: "" });
 
 export default defineComponent({
   name: "EditProject",
-  setup() {},
+  setup() {
+  },
   data() {
     return {
       project,
@@ -84,6 +85,6 @@ export default defineComponent({
       project.value = response.data.project;
       project.value.id = response.data.project.uid;
     });
-  },
+  }
 });
 </script>

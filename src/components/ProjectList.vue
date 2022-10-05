@@ -14,9 +14,13 @@
     </div>
 
     <el-table :data="showcased_projects" style="width: 100%">
-      <el-table-column fixed prop="project.name" label="Project" />
-      <el-table-column prop="project.description" label="Description" />
-      <el-table-column prop="owner" label="Owner" />
+    <el-table-column v-for="column in columns" 
+                     :key="column.prop"
+                     :prop="column.prop"
+                     :label="column.label"
+                     :formatter="column.formatter"
+                     :min-width="column.minWidth">
+      </el-table-column>
       <el-table-column fixed="right" label="Operations">
         <template #header>
           <el-autocomplete
@@ -119,6 +123,25 @@ export default defineComponent({
       username,
       connection_status,
       state,
+      columns: [
+        {
+          prop: "project.name",
+          label: "Project",
+          minWidth: "100px",
+        },
+        {
+          prop: "project.description",
+          label: "Description",
+          minWidth: "150px",
+        },
+        {
+          prop: "owner",
+          label: "Owner",
+          formatter: (row: any) => {
+            return `${row.owner.first_name} ${row.owner.last_name}`
+        }
+        },
+      ],
     };
   },
   methods: {
@@ -168,6 +191,7 @@ export default defineComponent({
       axios
         .get(request_url)
         .then((response) => {
+          console.log(response.data.projects, "lll");
           showcased_projects.value = response.data.projects;
           if (!this.$props.explore) {
             kratos_user_id.value = response.data.user.kratos_user_id;
