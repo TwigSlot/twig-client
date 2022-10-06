@@ -299,6 +299,7 @@ export default defineComponent({
             await this.list_all_tags(false)
             this.filter_suggestions()
             showing_tags_for.value = "Node " + new_value
+            tag_focus.value = null
         },
         async 'project_id'(new_value){
             await this.list_all_tags(true)
