@@ -9,11 +9,13 @@
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
+    <DecoPanelVue ref="deco_panel_ref" @color_nodes="color_nodes" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
 </template>
 <script lang="ts">
 import axios from "axios";
 import DataPanelVue from "../components/DataPanel.vue";
 import ControlPanelVue from "../components/ControlPanel.vue";
+import DecoPanelVue from "../components/DecoPanel.vue";
 import { defineComponent, reactive, ref } from "vue";
 import graphData from "../graphData"
 var dataPanel: any = ref({});
@@ -21,6 +23,7 @@ var dataPanel: any = ref({});
 const project_id: any = ref("");
 const graph_ref: any = ref();
 const control_panel_ref: any = ref();
+const deco_panel_ref: any = ref();
 var pause_key_down: boolean = false;
 
 function delete_node(node: any) {
@@ -45,6 +48,9 @@ function delete_edge(edge: any) {
         })
 }
 function add_node(raw: any) {
+    if(!('color' in raw)) raw.color = 'blue'
+    if(!('size' in raw)) raw.size = 20
+    else raw.size = parseInt(raw.size)
     graphData.nodes.value[`node${raw.uid}`] = raw
     if('pos_x' in raw && 'pos_y' in raw){
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
@@ -96,7 +102,8 @@ export default defineComponent({
     name: "Graph",
     components: {
         DataPanelVue,
-        ControlPanelVue
+        ControlPanelVue,
+        DecoPanelVue
     },
     data() {
         return {
@@ -108,11 +115,11 @@ export default defineComponent({
             eventHandlers: {
                 // wildcard: capture all events
                 "*": (type: string, event: any) => {
-                    console.log(type, event)
                     if (type == 'node:pointerover') {
+                        console.log(type, graphData.nodes.value[event.node])
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'node:pointerout'){
-                        if(selected_nodes.value){
+                        if(selected_nodes.value.length > 0){
                             dataPanel.value = graphData.nodes.value[selected_nodes.value[0]]
                         }
                     } else if (type == 'view:click') {
@@ -129,6 +136,12 @@ export default defineComponent({
         }
     },
     methods: {
+        color_nodes: function(arr: any, color: any){
+            for(const x of arr){
+                console.log('coloring', x, color)
+                graphData.nodes.value[`node${x}`].color = color
+            }
+        },
         updatedDataPanel: function(){
             dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`] 
         },
