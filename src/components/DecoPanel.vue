@@ -15,15 +15,23 @@
                     </text>
                 </div>
                 <br>
-                <input class="input is-hovered info-panel-item" type="text" placeholder="Color"
-                    :value="tag_color" @input="preview_tag_color" @change="update_tag_color" @focus="pauseKeyDown" @blur="handleBlur()" />
-                <input class="input is-hovered info-panel-item" type="text" placeholder="Tag" 
-                    v-model="tag_name" @change="update_tag_name"
+                Tag Color:
+                <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Color"
+                    :value="tag_color" @input="preview_tag_color" @change="update_tag_color" 
+                    @focus="pauseKeyDown" @blur="handleBlur()" />
+                <div class="slider-demo-block">
+                    <el-slider style="width: 10rem" v-model="tag_priority" @change="tag_priority_change"/>
+                </div>
+                Tag Name:
+                <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Name" 
+                    v-model="tag_name" @change="update_tag_name" 
+                    @focus="pauseKeyDown" @blur="handleBlur()" 
                     autocomplete="on" list="autocomplete_tags" />
                 <datalist id="autocomplete_tags">
                     <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
                     any).uid})`}}</option>
                 </datalist>
+                <input class="button is-primary" type="button" value="Color Graph" @click="click_all_tags" />
                 <input class="button is-primary" type="button" value="Add Tag" @click="add_tag"
                     :disabled="disable_add" />
                 <input class="button is-primary" type="button" value="List ALL Tags in Project"
@@ -33,11 +41,10 @@
         </div>
         <div id="deco-box">
             <h1 class="title is-4 deco-text">
-                Size:
+                Node Size:
             </h1>
             <div class="slider-demo-block">
-                <span class="demonstration">Customized initial value</span>
-                <el-slider v-model="data_panel.size" />
+                <el-slider style="width: 10rem" v-model="data_panel.size" @change="node_size_change"/>
             </div>
         </div>
     </div>
@@ -74,6 +81,7 @@
 <script lang="ts">
 import { assert } from "@vue/compiler-core";
 import axios from "axios";
+import { tag } from "type-fest/source/opaque";
 import { defineComponent, ref } from "vue";
 
 const tags_list = ref([]);
@@ -86,6 +94,30 @@ export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
     methods: {
+        node_size_change: function(e: any){
+            const resource_id = this.$props.data_panel.uid;
+            if (!resource_id) return
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${this.$props.project_id}` +
+                `/resource/${resource_id}` +
+                `/edit?size=${e}`
+            axios.post(request_url)
+                .then(response => {
+                    console.log(response.data)
+                })
+        },
+        tag_priority_change: function(e: any){
+            if(tag_focus.value == null) return
+            console.log(e)
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${this.$props.project_id}` +
+                `/tag/${(tag_focus as any).value.uid}` +
+                `/update_priority?priority=${e}`
+            axios.post(request_url)
+                .then((response) => {
+                    tag_focus.value = response.data
+                })
+        },
         handleBlur: async function () {
             this.$emit("resumeKeyDown");
         },
@@ -116,6 +148,7 @@ export default defineComponent({
             axios.post(request_url)
                 .then((response) => {
                     (tags_list.value as any).push(response.data)
+                    this.sort_tags_list()
                 })
         },
         create_tag: async function () {
@@ -128,6 +161,18 @@ export default defineComponent({
                     return response.data
                 })
         },
+        sort_tags_list(){
+            tags_list.value.sort(function(a: any,b: any){
+                if(!('priority' in a)) a.priority = 0
+                if(!('priority' in b)) b.priority = 0
+                return a.priority - b.priority
+            })
+        },
+        async click_all_tags(){
+            for(const x of tags_list.value){
+                await this.click_tag(x)
+            }
+        },
         list_tags: async function () {
             const resource_id = this.$props.data_panel.uid;
             if (!resource_id) return
@@ -138,6 +183,7 @@ export default defineComponent({
             return axios.get(request_url)
                 .then((response) => {
                     tags_list.value = response.data
+                    this.sort_tags_list()
                     disable_add.value = false;
                     return response.data
                 })
@@ -150,6 +196,7 @@ export default defineComponent({
                 .then((response) => {
                     if (update_tags_list) {
                         tags_list.value = response.data
+                        this.sort_tags_list()
                         showing_tags_for.value = "Entire Project"
                         disable_add.value = true
                     }
@@ -210,15 +257,22 @@ export default defineComponent({
             (tag_focus as any).value.color = e.target.value
         },
         update_tag_name: function(e: any){
-            console.log(e)
+            const request_url = `${import.meta.env.VITE_API_URL}` +
+                `/project/${this.$props.project_id}` +
+                `/tag/${(tag_focus as any).value.uid}` +
+                `/update_name?name=${e.target.value}`
+            axios.post(request_url)
+                .then((response) => {
+                    tag_focus.value = response.data
+                })
         },
-        click_tag: function(tag: any){
+        click_tag: async function(tag: any){
             (tag_focus as any).value = tag
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/tag/${(tag_focus as any).value.uid}` +
                 `/list_resources`
-            axios.get(request_url)
+            await axios.get(request_url)
                 .then((response) => {
                     var arr = []
                     for(const i of response.data){
@@ -244,6 +298,10 @@ export default defineComponent({
             await this.list_all_tags(false)
             this.filter_suggestions()
             showing_tags_for.value = "Node " + new_value
+        },
+        async 'project_id'(new_value){
+            await this.list_all_tags(true)
+            this.click_all_tags()
         }
     },
     computed: {
@@ -257,6 +315,14 @@ export default defineComponent({
         },
         tag_color(){
             return tag_focus.value == null ? '' : (tag_focus as any).value.color
+        },
+        tag_priority: {
+            get: function() {
+                return tag_focus.value == null ? 0 : (tag_focus as any).value.priority
+            },
+            set: function(nv: number){
+                (tag_focus as any).value.priority = nv
+            }
         }
     }
 });

@@ -50,6 +50,7 @@ function delete_edge(edge: any) {
 function add_node(raw: any) {
     if(!('color' in raw)) raw.color = 'blue'
     if(!('size' in raw)) raw.size = 20
+    else raw.size = parseInt(raw.size)
     graphData.nodes.value[`node${raw.uid}`] = raw
     if('pos_x' in raw && 'pos_y' in raw){
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
@@ -137,6 +138,7 @@ export default defineComponent({
     methods: {
         color_nodes: function(arr: any, color: any){
             for(const x of arr){
+                console.log('coloring', x, color)
                 graphData.nodes.value[`node${x}`].color = color
             }
         },
