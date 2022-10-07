@@ -85,7 +85,6 @@ function get_items() {
         .then(response => {
             graphData.nodes.value = {}
             graphData.edges.value = {}
-            console.log(response.data)
             var edge_queue: Array<Object> = []
             for (const item of response.data.items) {
                 if (item instanceof Array) {
@@ -120,7 +119,6 @@ export default defineComponent({
                 // wildcard: capture all events
                 "*": (type: string, event: any) => {
                     if (type == 'node:pointerover') {
-                        console.log(type, graphData.nodes.value[event.node])
                         dataPanel.value = graphData.nodes.value[event.node]
                     } else if (type == 'node:pointerout'){
                         if(selected_nodes.value.length > 0){
@@ -145,8 +143,6 @@ export default defineComponent({
         },
         color_nodes: function(arr: any, color: any){
             for(const x in arr){
-                console.log(graphData.nodes.value)
-                console.log(arr[x])
                 graphData.nodes.value[`node${arr[x]}`].color = color
             }
         },

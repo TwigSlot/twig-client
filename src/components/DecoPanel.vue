@@ -119,7 +119,6 @@ export default defineComponent({
         },
         tag_priority_change: function (e: any) {
             if (tag_focus.value == null) return
-            console.log(e)
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/tag/${(tag_focus as any).value.uid}` +
@@ -149,7 +148,6 @@ export default defineComponent({
             else return null
         },
         tag_resource: function(tag_id: string, resource_id: string){
-            console.log(tag_id, resource_id)
             if(resource_id == null) throw ""
             if(!(tag_id in all_tag_resources.value))
                 (all_tag_resources as any).value[tag_id] = [];
@@ -212,7 +210,27 @@ export default defineComponent({
                 await this.click_tag(x)
             }
         },
+        get_tag_by_id: function(tag_id: string){
+            const one = all_tags.value.filter(tag => (tag as any).uid == parseInt(tag_id))
+            return one.length == 0 ? null : one[0];
+        },
         list_tags: async function () {
+            const resource_id = this.$props.data_panel.uid;
+            if (!resource_id) return
+            if(all_tags.value.length == 0) await this.list_all_tags(false)
+            tags_list.value = []
+            const tr = (all_tag_resources as any).value
+            for(const x in all_tags.value){
+                const tag_id = (all_tags as any).value[x].uid;
+                if(tag_id in tr){
+                    console.log(all_tags.value)
+                    tags_list.value.push(this.get_tag_by_id((tag_id as any)))
+                }
+            }
+            this.sort_tags_list()
+            disable_add.value = false;
+        },
+        list_tags_pull_from_online: async function () {
             const resource_id = this.$props.data_panel.uid;
             if (!resource_id) return
             const request_url = `${import.meta.env.VITE_API_URL}` +
@@ -223,9 +241,6 @@ export default defineComponent({
             return axios.get(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'list tag ok');
-                    tags_list.value = response.data
-                    this.sort_tags_list()
-                    disable_add.value = false;
                     return response.data
                 })
                 .catch(err => {
@@ -233,7 +248,20 @@ export default defineComponent({
                     throw err
                 })
         },
-        list_all_tags: async function (update_tags_list: boolean) {
+        list_all_tags: async function(update_tags_list: boolean){
+            if(all_tags.value.length == 0){
+                all_tags.value = await this.list_all_tags_pull_from_online(update_tags_list);
+            }
+            if (update_tags_list) {
+                tags_list.value = all_tags.value
+                this.sort_tags_list()
+                showing_tags_for.value = "Entire Project"
+                disable_add.value = true
+            }
+            tags_suggestions_list.value = all_tags.value
+            return all_tags.value
+        },
+        list_all_tags_pull_from_online: async function (update_tags_list: boolean) {
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/list_all_tags`
@@ -241,14 +269,6 @@ export default defineComponent({
             return axios.get(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'list all tag ok');
-                    if (update_tags_list) {
-                        tags_list.value = response.data
-                        this.sort_tags_list()
-                        showing_tags_for.value = "Entire Project"
-                        disable_add.value = true
-                    }
-                    all_tags.value = response.data
-                    tags_suggestions_list.value = response.data
                     return response.data
                 })
                 .catch(err => {
@@ -279,7 +299,6 @@ export default defineComponent({
                 })
         },
         dissociate_tag: async function (name_of_tag: string) {
-            console.log('diss', name_of_tag)
             var first_tag_matching_name = this.tag_exists(tags_list.value, name_of_tag)
             if (first_tag_matching_name == null) return
             const resource_id = this.$props.data_panel.uid;
@@ -361,6 +380,7 @@ export default defineComponent({
                 (tag_focus as any).value.color)
         },
         click_tag_pull_from_online: async function (tag: any) {
+            if (this.$props.project_id == undefined) return
             const tag_id = tag.uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
@@ -370,9 +390,6 @@ export default defineComponent({
             return await axios.get(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'click tag ok');
-                    for(const i of response.data){
-                        this.tag_resource(tag_id, (i as any).uid)
-                    }
                     return response.data
                 })
                 .catch(err => {
