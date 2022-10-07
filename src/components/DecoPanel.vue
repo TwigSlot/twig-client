@@ -2,7 +2,8 @@
     <div class="deco-panel">
         <h1 class="title is-4 deco-text">
             Tags: {{ showing_tags_for }}
-            <button class="button" @click="hide_deco_panel = !hide_deco_panel">{{ hide_deco_panel ? "Show" : "Hide"}}</button>
+            <button class="button" @click="hide_deco_panel = !hide_deco_panel">{{ hide_deco_panel ? "Show" :
+            "Hide"}}</button>
         </h1>
         <div v-if="!hide_deco_panel">
             <div id="deco-box">
@@ -84,7 +85,6 @@
 <script lang="ts">
 import { assert } from "@vue/compiler-core";
 import axios from "axios";
-import { tag } from "type-fest/source/opaque";
 import { defineComponent, ref } from "vue";
 
 const tags_list = ref([]);
@@ -147,9 +147,12 @@ export default defineComponent({
             if (tags_matching_name.length > 0) return tags_matching_name[0]
             else return null
         },
-        tag_resource: function(tag_id: string, resource_id: string){
-            if(resource_id == null) throw ""
-            if(!(tag_id in all_tag_resources.value))
+        tag_resource: function (tag_id: string, resource_id: any) {
+            if (resource_id == null){ // serves as initializer
+                (all_tag_resources as any).value[tag_id] = [];
+                return
+            }
+            if (!(tag_id in all_tag_resources.value))
                 (all_tag_resources as any).value[tag_id] = [];
             (all_tag_resources as any).value[tag_id].push(resource_id);
         },
@@ -205,26 +208,21 @@ export default defineComponent({
                 return a.priority - b.priority
             })
         },
-        async click_all_tags() {
-            for (const x of tags_list.value) {
-                await this.click_tag(x)
-            }
-        },
-        get_tag_by_id: function(tag_id: string){
+        get_tag_by_id: function (tag_id: string) {
             const one = all_tags.value.filter(tag => (tag as any).uid == parseInt(tag_id))
             return one.length == 0 ? null : one[0];
         },
-        list_tags: async function () {
-            const resource_id = this.$props.data_panel.uid;
+
+        list_tags: async function (resource_id: string) { // list tags for a specific resource
             if (!resource_id) return
-            if(all_tags.value.length == 0) await this.list_all_tags(false)
+            if (all_tags.value.length == 0) await this.list_all_tags(false)
             tags_list.value = []
-            const tr = (all_tag_resources as any).value
-            for(const x in all_tags.value){
-                const tag_id = (all_tags as any).value[x].uid;
-                if(tag_id in tr){
-                    console.log(all_tags.value)
-                    tags_list.value.push(this.get_tag_by_id((tag_id as any)))
+            for (const x in all_tags.value) { // for all tags
+                const tag = (all_tags as any).value[x]
+                const tr : any = await this.list_tag_resources(tag)
+                console.log(tr)
+                if (tr.indexOf(resource_id) != -1) {
+                    (tags_list as any).value.push(tag)
                 }
             }
             this.sort_tags_list()
@@ -248,8 +246,9 @@ export default defineComponent({
                     throw err
                 })
         },
-        list_all_tags: async function(update_tags_list: boolean){
-            if(all_tags.value.length == 0){
+        // list all tags
+        list_all_tags: async function (update_tags_list: boolean) {
+            if (all_tags.value.length == 0) {
                 all_tags.value = await this.list_all_tags_pull_from_online(update_tags_list);
             }
             if (update_tags_list) {
@@ -303,15 +302,17 @@ export default defineComponent({
             if (first_tag_matching_name == null) return
             const resource_id = this.$props.data_panel.uid;
             if (!resource_id) return
+            const tag_id = (first_tag_matching_name as any).uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
-                `/dissociate_tag?tag_uid=${(first_tag_matching_name as any).uid}`
+                `/dissociate_tag?tag_uid=${tag_id}`
             this.$emit('add_log', 'DecoPanel', 'diss tag...');
             axios.post(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'diss tag ok');
-                    this.list_tags()
+                    delete (all_tag_resources as any).value[tag_id]
+                    this.list_tags(resource_id)
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'diss tag error');
@@ -347,7 +348,7 @@ export default defineComponent({
             (tag_focus as any).value.color = e.target.value
         },
         update_tag_name: function (e: any) {
-            if(tag_focus.value == null) return;
+            if (tag_focus.value == null) return;
             const tag_id = (tag_focus as any).value.uid
             const new_name = e.target.value
             const request_url = `${import.meta.env.VITE_API_URL}` +
@@ -358,7 +359,7 @@ export default defineComponent({
             axios.post(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'update tag name ok');
-                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).name= new_name;
+                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).name = new_name;
                     tag_focus.value = response.data
                 })
                 .catch(err => {
@@ -367,19 +368,28 @@ export default defineComponent({
                 })
 
         },
-        click_tag: async function(tag: any){
+        color_nodes: async function(tag: any, override : boolean){
+            const tr = await this.list_tag_resources(tag)
+            this.$emit('color_nodes', tr, tag.color, tag.priority, override)
+        },
+        click_tag: async function (tag: any) {
             (tag_focus as any).value = tag
-            if(!(tag.uid in all_tag_resources.value)){
-                const data = await this.click_tag_pull_from_online(tag)
+            const resource_id = this.$props.data_panel.uid;
+            this.color_nodes(tag, true)
+        },
+        list_tag_resources: async function(tag: any){
+            const tag_id = tag.uid;
+            var all_tr = (all_tag_resources as any).value
+            if(!(tag_id in all_tr)){
+                var data = await this.list_tag_resources_pull_from_online(tag);
+                this.tag_resource(tag_id, null)
                 for (const i of data) {
-                    this.tag_resource(tag.uid, i.uid)
+                    await this.tag_resource(tag_id, i.uid)
                 }
             }
-            this.$emit('color_nodes', 
-                (all_tag_resources as any).value[tag.uid], 
-                (tag_focus as any).value.color)
+            return all_tr[tag_id]
         },
-        click_tag_pull_from_online: async function (tag: any) {
+        list_tag_resources_pull_from_online: async function (tag: any) {
             if (this.$props.project_id == undefined) return
             const tag_id = tag.uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
@@ -396,6 +406,11 @@ export default defineComponent({
                     this.$emit('add_log', 'DecoPanel', 'click tag error');
                     throw err
                 })
+        },
+        list_all_tag_resources: function(){
+            for(const i in all_tags.value){
+                this.list_tag_resources(all_tags.value[i])
+            }
         }
     },
     data() {
@@ -411,15 +426,18 @@ export default defineComponent({
     },
     watch: {
         async 'data_panel.uid'(new_value) {
-            await this.list_tags()
-            await this.list_all_tags(false)
+            await this.list_tags(this.$props.data_panel.uid)
             this.filter_suggestions()
             showing_tags_for.value = "Node " + new_value
             tag_focus.value = null
         },
         async 'project_id'(new_value) {
             await this.list_all_tags(true)
-            this.click_all_tags()
+            await this.list_all_tag_resources()
+            for(const x in (all_tags as any).value){
+                console.log(x)
+                this.color_nodes((all_tags as any).value[x], false)
+            }
         }
     },
     computed: {

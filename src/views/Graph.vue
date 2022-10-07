@@ -141,9 +141,18 @@ export default defineComponent({
         add_log: function(type: string, message: string){
             (this.$refs.graph_logs_ref as any).add_log(type, message);
         },
-        color_nodes: function(arr: any, color: any){
-            for(const x in arr){
-                graphData.nodes.value[`node${arr[x]}`].color = color
+        color_nodes: function(arr: any, color: any, priority: number, override : boolean){
+            for(const x in arr) {
+                const n = graphData.nodes.value[`node${arr[x]}`]
+                if(override){
+                    n.color = color;
+                    continue;
+                }
+                if(!('highest_priority' in n)) n.highest_priority = -100;
+                if(priority > n.highest_priority){
+                    n.color = color
+                    n.highest_priority = priority
+                } 
             }
         },
         updatedDataPanel: function(){
