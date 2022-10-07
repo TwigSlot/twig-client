@@ -60,7 +60,7 @@ import graphData from "../graphData";
 
 const project_id: any = ref("");
 const retrieval_status = ref("")
-const hide_description = ref(false);
+const hide_description = ref(true);
 export default defineComponent({
   name: "DataPanel",
   setup() { },
@@ -119,6 +119,7 @@ export default defineComponent({
         request_url_post.substring(0, requestLengthLimit) +
         (request_url_post.length > requestLengthLimit ? "..." : "");
       retrieval_status.value = "Saving..."
+      this.$emit('add_log', 'DataPanel', 'saving data panel...')
       axios.post(request_url_pre + request_url_post).then((response) => {
         console.log(response.data);
         graphData.nodes.value[`node${response.data.uid}`] = response.data;
@@ -126,6 +127,7 @@ export default defineComponent({
           this.$emit("updatedDataPanel");
         }
         retrieval_status.value = "Saved!"
+        this.$emit('add_log', 'DataPanel', 'saved')
         setTimeout(() => {
           retrieval_status.value = ""
         }, 1000)

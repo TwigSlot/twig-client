@@ -5,18 +5,19 @@
             :edges="graphData.edges" :layouts="graphData.layouts"
             :configs="graphData.configs" :event-handlers="eventHandlers" />
     </div>
-    <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
+    <DataPanelVue @add_log="add_log" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
         :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
-    <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
+    <ControlPanelVue @add_log="add_log" @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
-    <DecoPanelVue ref="deco_panel_ref" @color_nodes="color_nodes" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
-    <!-- <LoadingComponentVue></LoadingComponentVue> -->
+    <DecoPanelVue @add_log="add_log" ref="deco_panel_ref" @color_nodes="color_nodes" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
+    <GraphLogsVue ref="graph_logs_ref"></GraphLogsVue>
 </template>
 <script lang="ts">
 import axios from "axios";
 import DataPanelVue from "../components/DataPanel.vue";
 import ControlPanelVue from "../components/ControlPanel.vue";
 import DecoPanelVue from "../components/DecoPanel.vue";
+import GraphLogsVue from "../components/GraphLogs.vue";
 import { defineComponent, reactive, ref } from "vue";
 import graphData from "../graphData"
 var dataPanel: any = ref({});
@@ -25,6 +26,7 @@ const project_id: any = ref("");
 const graph_ref: any = ref();
 const control_panel_ref: any = ref();
 const deco_panel_ref: any = ref();
+const graph_logs_ref: any = ref();
 var pause_key_down: boolean = false;
 
 function delete_node(node: any) {
@@ -104,7 +106,8 @@ export default defineComponent({
     components: {
         DataPanelVue,
         ControlPanelVue,
-        DecoPanelVue
+        DecoPanelVue,
+        GraphLogsVue
     },
     data() {
         return {
@@ -137,9 +140,11 @@ export default defineComponent({
         }
     },
     methods: {
+        add_log: function(type: string, message: string){
+            (this.$refs.graph_logs_ref as any).add_log(type, message);
+        },
         color_nodes: function(arr: any, color: any){
             for(const x of arr){
-                console.log('coloring', x, color)
                 graphData.nodes.value[`node${x}`].color = color
             }
         },
@@ -236,6 +241,7 @@ export default defineComponent({
             cp_ref.save_locations_status = 'saving...'
             axios.post(request_url, node_pos).then((response) => {
                 if(response.status == 200){
+                    this.add_log('Location', "Saved");
                     (cp_ref).save_locations_status = 'saved'
                     setTimeout(() => { 
                         (cp_ref).save_locations_status = ''

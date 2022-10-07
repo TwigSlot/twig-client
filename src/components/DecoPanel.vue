@@ -89,11 +89,13 @@ import { defineComponent, ref } from "vue";
 
 const tags_list = ref([]);
 const tags_suggestions_list = ref([]);
+const all_tags = ref([]);
+const all_tag_resources = ref({});
 const showing_tags_for = ref("");
 const disable_add = ref(false);
 const tag_focus = ref(null);
 const tag_name_input = ref("");
-const hide_deco_panel = ref(false);
+const hide_deco_panel = ref(true);
 export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
@@ -105,9 +107,14 @@ export default defineComponent({
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
                 `/edit?size=${e}`
+            this.$emit('add_log', 'DecoPanel', 'edit size...');
             axios.post(request_url)
                 .then(response => {
-                    console.log(response.data)
+                    this.$emit('add_log', 'DecoPanel', 'edit size ok');
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'ERROR', 'edit size');
+                    throw err
                 })
         },
         tag_priority_change: function (e: any) {
@@ -117,9 +124,15 @@ export default defineComponent({
                 `/project/${this.$props.project_id}` +
                 `/tag/${(tag_focus as any).value.uid}` +
                 `/update_priority?priority=${e}`
+            this.$emit('add_log', 'DecoPanel', 'update_priority...');
             axios.post(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'update priority ok');
                     tag_focus.value = response.data
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'update priority error');
+                    throw err
                 })
         },
         handleBlur: async function () {
@@ -139,7 +152,6 @@ export default defineComponent({
             if (this.tag_name_input == "") return
             const tags = await this.list_all_tags(false)
             var first_tag_matching_name = this.tag_exists(tags, this.tag_name_input)
-            console.log(first_tag_matching_name)
             if (first_tag_matching_name == null) {
                 first_tag_matching_name = await this.create_tag().then((res) => { return res; })
             }
@@ -149,10 +161,17 @@ export default defineComponent({
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
                 `/add_tag?tag_uid=${(first_tag_matching_name as any).uid}`
+            this.$emit('add_log', 'DecoPanel', 'add tag...');
             axios.post(request_url)
                 .then((response) => {
-                    (tags_list.value as any).push(response.data)
+                    (tags_list.value as any).push(response.data);
+                    (all_tags.value as any).push(response.data);
+                    this.$emit('add_log', 'DecoPanel', 'add tag ok');
                     this.sort_tags_list()
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'add tag error');
+                    throw err
                 })
         },
         create_tag: async function () {
@@ -160,9 +179,16 @@ export default defineComponent({
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/create_tag?name=${this.tag_name_input}`
+            this.$emit('add_log', 'DecoPanel', 'create tag...');
             return axios.post(request_url)
                 .then((response) => {
+                    (all_tags.value as any).push(response.data);
+                    this.$emit('add_log', 'DecoPanel', 'create tag ok');
                     return response.data
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'create tag error');
+                    throw err
                 })
         },
         sort_tags_list() {
@@ -184,28 +210,41 @@ export default defineComponent({
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
                 `/list_tags`
+            this.$emit('add_log', 'DecoPanel', 'list tag...');
             return axios.get(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'list tag ok');
                     tags_list.value = response.data
                     this.sort_tags_list()
                     disable_add.value = false;
                     return response.data
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'list tag error');
+                    throw err
                 })
         },
         list_all_tags: async function (update_tags_list: boolean) {
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/list_all_tags`
+            this.$emit('add_log', 'DecoPanel', 'list all tag...');
             return axios.get(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'list all tag ok');
                     if (update_tags_list) {
                         tags_list.value = response.data
                         this.sort_tags_list()
                         showing_tags_for.value = "Entire Project"
                         disable_add.value = true
                     }
+                    all_tags.value = response.data
                     tags_suggestions_list.value = response.data
                     return response.data
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'list all tag error');
+                    throw err
                 })
         },
         delete_tag: async function () {
@@ -219,11 +258,15 @@ export default defineComponent({
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/delete_tag?uid=${this.tag_name_input}`
+            this.$emit('add_log', 'DecoPanel', 'delete tag...');
             axios.post(request_url)
                 .then((response) => {
+                    all_tags.value = all_tags.value.filter((tag: any) => tag.uid != this.tag_name_input)
+                    this.$emit('add_log', 'DecoPanel', 'delete tag ok');
                 })
-                .catch((err) => {
-                    console.log(err)
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'delete tag error');
+                    throw err
                 })
         },
         dissociate_tag: async function (name_of_tag: string) {
@@ -236,9 +279,15 @@ export default defineComponent({
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
                 `/dissociate_tag?tag_uid=${(first_tag_matching_name as any).uid}`
+            this.$emit('add_log', 'DecoPanel', 'diss tag...');
             axios.post(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'diss tag ok');
                     this.list_tags()
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'diss tag error');
+                    throw err
                 })
         },
         filter_suggestions: function () {
@@ -247,13 +296,22 @@ export default defineComponent({
         },
         update_tag_color: function (e: any) {
             if (tag_focus.value == null) return
+            const tag_id = (tag_focus as any).value.uid
+            const new_color = e.target.value
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/tag/${(tag_focus as any).value.uid}` +
-                `/update_color?color=${e.target.value}`
+                `/tag/${tag_id}` +
+                `/update_color?color=${new_color}`
+            this.$emit('add_log', 'DecoPanel', 'update tag color...');
             axios.post(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'update tag color ok');
+                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).color = new_color;
                     tag_focus.value = response.data
+                })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'update tag color error');
+                    throw err
                 })
         },
         preview_tag_color: function (e: any) {
@@ -261,29 +319,56 @@ export default defineComponent({
             (tag_focus as any).value.color = e.target.value
         },
         update_tag_name: function (e: any) {
+            if(tag_focus.value == null) return;
+            const tag_id = (tag_focus as any).value.uid
+            const new_name = e.target.value
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/tag/${(tag_focus as any).value.uid}` +
-                `/update_name?name=${e.target.value}`
+                `/tag/${tag_id}` +
+                `/update_name?name=${new_name}`
+            this.$emit('add_log', 'DecoPanel', 'update tag name...');
             axios.post(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'update tag name ok');
+                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).name= new_name;
                     tag_focus.value = response.data
                 })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'update tag name error');
+                    throw err
+                })
+
         },
-        click_tag: async function (tag: any) {
+        click_tag: async function(tag: any){
+            if(tag.value == null) return
+            if(tag.value.uid in all_tag_resources.value) 
+                return (all_tag_resources as any).value[tag.value.id]
+            else return this.click_tag_pull_from_online(tag)
+        },
+        click_tag_pull_from_online: async function (tag: any) {
             (tag_focus as any).value = tag
+            const tag_id = (tag_focus as any).value.uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/tag/${(tag_focus as any).value.uid}` +
+                `/tag/${tag_id}` +
                 `/list_resources`
+            this.$emit('add_log', 'DecoPanel', 'click tag...');
             await axios.get(request_url)
                 .then((response) => {
+                    this.$emit('add_log', 'DecoPanel', 'click tag ok');
+                    (all_tag_resources as any).value[tag_id] = response.data
                     var arr = []
                     for (const i of response.data) {
                         arr.push(i.uid)
                     }
                     this.$emit('color_nodes', arr, (tag_focus as any).value.color)
                 })
+                .catch(err => {
+                    this.$emit('add_log', 'DecoPanel', 'click tag error');
+                    throw err
+                })
+
+
         }
     },
     data() {
