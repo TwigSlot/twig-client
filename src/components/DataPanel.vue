@@ -11,17 +11,15 @@
     </div>
     <div class="control">
       <a target="_blank" :href="data_panel.link">
-        <button class="button is-dark">Open</button>
+        <button class="button is-dark info-panel-item">Open</button>
+        <button @click="hide_description = !hide_description"
+          class="button info-panel-item">{{ hide_description ? "Show" : "Hide"}} description</button>
       </a>
       <text class="subtitle is-4 data-panel-item">{{ retrieval_status }}</text>
     </div>
-    <div class="control" :style="{marginTop: '10px'}">
+    <div class="control" :style="{marginTop: '10px'}" v-if="!hide_description">
       <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
         @focus="pauseKeyDown" @blur="handleBlur('description', $event)"></textarea>
-    </div>
-
-    <div class="info-panel-inner">
-      <div></div>
     </div>
   </div>
 </template>
@@ -62,6 +60,7 @@ import graphData from "../graphData";
 
 const project_id: any = ref("");
 const retrieval_status = ref("")
+const hide_description = ref(false);
 export default defineComponent({
   name: "DataPanel",
   setup() { },
@@ -72,7 +71,8 @@ export default defineComponent({
   },
   data() {
     return {
-      retrieval_status
+      retrieval_status,
+      hide_description
     }
   },
   methods: {

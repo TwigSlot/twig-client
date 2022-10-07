@@ -10,6 +10,7 @@
     <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
     </ControlPanelVue>
     <DecoPanelVue ref="deco_panel_ref" @color_nodes="color_nodes" :data_panel="dataPanel" :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
+    <!-- <LoadingComponentVue></LoadingComponentVue> -->
 </template>
 <script lang="ts">
 import axios from "axios";
