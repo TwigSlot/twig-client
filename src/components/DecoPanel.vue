@@ -95,7 +95,7 @@ const showing_tags_for = ref("");
 const disable_add = ref(false);
 const tag_focus = ref(null);
 const tag_name_input = ref("");
-const hide_deco_panel = ref(true);
+const hide_deco_panel = ref(false);
 export default defineComponent({
     name: "DecoPanel",
     props: ["data_panel", "project_id"],
@@ -148,6 +148,13 @@ export default defineComponent({
             if (tags_matching_name.length > 0) return tags_matching_name[0]
             else return null
         },
+        tag_resource: function(tag_id: string, resource_id: string){
+            console.log(tag_id, resource_id)
+            if(resource_id == null) throw ""
+            if(!(tag_id in all_tag_resources.value))
+                (all_tag_resources as any).value[tag_id] = [];
+            (all_tag_resources as any).value[tag_id].push(resource_id);
+        },
         add_tag: async function () {
             if (this.tag_name_input == "") return
             const tags = await this.list_all_tags(false)
@@ -157,15 +164,17 @@ export default defineComponent({
             }
             const resource_id = this.$props.data_panel.uid;
             if (!resource_id) return
+            const tag_id = (first_tag_matching_name as any).uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/resource/${resource_id}` +
-                `/add_tag?tag_uid=${(first_tag_matching_name as any).uid}`
+                `/add_tag?tag_uid=${tag_id}`
             this.$emit('add_log', 'DecoPanel', 'add tag...');
             axios.post(request_url)
                 .then((response) => {
                     (tags_list.value as any).push(response.data);
                     (all_tags.value as any).push(response.data);
+                    this.tag_resource(tag_id, resource_id)
                     this.$emit('add_log', 'DecoPanel', 'add tag ok');
                     this.sort_tags_list()
                 })
@@ -340,35 +349,36 @@ export default defineComponent({
 
         },
         click_tag: async function(tag: any){
-            if(tag.value == null) return
-            if(tag.value.uid in all_tag_resources.value) 
-                return (all_tag_resources as any).value[tag.value.id]
-            else return this.click_tag_pull_from_online(tag)
+            (tag_focus as any).value = tag
+            if(!(tag.uid in all_tag_resources.value)){
+                const data = await this.click_tag_pull_from_online(tag)
+                for (const i of data) {
+                    this.tag_resource(tag.uid, i.uid)
+                }
+            }
+            this.$emit('color_nodes', 
+                (all_tag_resources as any).value[tag.uid], 
+                (tag_focus as any).value.color)
         },
         click_tag_pull_from_online: async function (tag: any) {
-            (tag_focus as any).value = tag
-            const tag_id = (tag_focus as any).value.uid
+            const tag_id = tag.uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/tag/${tag_id}` +
                 `/list_resources`
             this.$emit('add_log', 'DecoPanel', 'click tag...');
-            await axios.get(request_url)
+            return await axios.get(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'click tag ok');
-                    (all_tag_resources as any).value[tag_id] = response.data
-                    var arr = []
-                    for (const i of response.data) {
-                        arr.push(i.uid)
+                    for(const i of response.data){
+                        this.tag_resource(tag_id, (i as any).uid)
                     }
-                    this.$emit('color_nodes', arr, (tag_focus as any).value.color)
+                    return response.data
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'click tag error');
                     throw err
                 })
-
-
         }
     },
     data() {

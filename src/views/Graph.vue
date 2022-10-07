@@ -144,8 +144,10 @@ export default defineComponent({
             (this.$refs.graph_logs_ref as any).add_log(type, message);
         },
         color_nodes: function(arr: any, color: any){
-            for(const x of arr){
-                graphData.nodes.value[`node${x}`].color = color
+            for(const x in arr){
+                console.log(graphData.nodes.value)
+                console.log(arr[x])
+                graphData.nodes.value[`node${arr[x]}`].color = color
             }
         },
         updatedDataPanel: function(){
