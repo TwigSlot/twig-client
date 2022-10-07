@@ -32,7 +32,7 @@
                             <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
                             any).uid})`}}</option>
                         </datalist>
-                        <input class="button is-primary" type="button" value="Color Graph" @click="click_all_tags" />
+                        <input class="button is-primary" type="button" value="Color Graph" @click="color_all_nodes" />
                         <input class="button is-primary" type="button" value="Add Tag" @click="add_tag"
                             :disabled="disable_add" />
                         <input class="button is-primary" type="button" value="List ALL Tags in Project"
@@ -411,6 +411,11 @@ export default defineComponent({
             for(const i in all_tags.value){
                 this.list_tag_resources(all_tags.value[i])
             }
+        },
+        color_all_nodes: function(){
+            for(const x in (all_tags as any).value){
+                this.color_nodes((all_tags as any).value[x], false)
+            }
         }
     },
     data() {
@@ -434,10 +439,7 @@ export default defineComponent({
         async 'project_id'(new_value) {
             await this.list_all_tags(true)
             await this.list_all_tag_resources()
-            for(const x in (all_tags as any).value){
-                console.log(x)
-                this.color_nodes((all_tags as any).value[x], false)
-            }
+            // this.color_all_nodes()
         }
     },
     computed: {

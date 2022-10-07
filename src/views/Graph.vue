@@ -149,7 +149,7 @@ export default defineComponent({
                     continue;
                 }
                 if(!('highest_priority' in n)) n.highest_priority = -100;
-                if(priority > n.highest_priority){
+                if(priority >= n.highest_priority){
                     n.color = color
                     n.highest_priority = priority
                 } 
