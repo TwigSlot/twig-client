@@ -2,32 +2,48 @@
     <div class="deco-panel">
         <h1 class="title is-4 deco-text">
             Tags: {{ showing_tags_for }}
-            <button class="button" @click="hide_deco_panel = !hide_deco_panel">{{ hide_deco_panel ? "Show" :
-            "Hide"}}</button>
+            <button class="button" @click="hide_deco_panel = !hide_deco_panel">
+                {{ hide_deco_panel ?
+                "Show" :
+                "Hide"}}
+            </button>
+            <button class="button" @click="repull">
+                Resync All Tags
+            </button>
         </h1>
         <div v-if="!hide_deco_panel">
             <div id="deco-box">
                 <div class="deco-item">
                     <div>
                         <div id="tags-list">
-                            <text @contextmenu.prevent="dissociate_tag((tag as any).name)" v-for="tag in tags_list"
-                                class="subtitle tag" :style="{'background-color': (tag as any).color}"
+                            <text v-for="tag in tags_list" @contextmenu.prevent="
+                                disable_add ? delete_tag((tag as any).uid) : dissociate_tag((tag as any).name)
+                            " class="subtitle tag" :style="{'background-color': (tag as any).color}"
                                 @click="click_tag(tag)">
                                 {{(tag as any).name}}
                             </text>
                         </div>
+                        <text>
+                            {{ chosen_tag == '' ?  `Left-click a tag to edit it` : `Edit Tag : ${ chosen_tag }` }}
+                        </text>
                         <br>
-                        Tag Color:
-                        <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Color"
-                            :value="tag_color" @input="preview_tag_color" @change="update_tag_color"
-                            @focus="pauseKeyDown" @blur="handleBlur()" />
-                        <div class="slider-demo-block">
+                        <div v-if="tag_color != ''">
+
+                            Tag Color:
+                            <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Color"
+                                :value="tag_color" @input="preview_tag_color" @change="update_tag_color"
+                                @focus="pauseKeyDown" @blur="handleBlur" />
+                        </div>
+                        <div v-if="tag_focus != null" class="slider-demo-block">
                             <el-slider style="width: 10rem" v-model="tag_priority" @change="tag_priority_change" />
                         </div>
-                        Tag Name:
-                        <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Name"
-                            v-model="tag_name" @change="update_tag_name" @focus="pauseKeyDown" @blur="handleBlur()"
-                            autocomplete="on" list="autocomplete_tags" />
+                        <div>
+
+                            Tag Name:
+                            <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Name"
+                                v-model="tag_name" @change="update_tag_name" @focus="pauseKeyDown" @blur="handleBlur()"
+                                autocomplete="on" list="autocomplete_tags" />
+                        </div>
                         <datalist id="autocomplete_tags">
                             <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
                             any).uid})`}}</option>
@@ -37,8 +53,6 @@
                             :disabled="disable_add" />
                         <input class="button is-primary" type="button" value="List ALL Tags in Project"
                             @click="list_all_tags(true)" />
-                        <input class="button is-primary" type="button" value="Delete Tag (by uid)"
-                            @click="delete_tag" />
                     </div>
                 </div>
             </div>
@@ -125,9 +139,9 @@ export default defineComponent({
                 `/update_priority?priority=${e}`
             this.$emit('add_log', 'DecoPanel', 'update_priority...');
             axios.post(request_url)
-                .then((response) => {
+                .then(async (response) => {
                     this.$emit('add_log', 'DecoPanel', 'update priority ok');
-                    tag_focus.value = response.data
+                    this.sort_tags_list()
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'update priority error');
@@ -148,13 +162,17 @@ export default defineComponent({
             else return null
         },
         tag_resource: function (tag_id: string, resource_id: any) {
-            if (resource_id == null){ // serves as initializer
+            if (resource_id == null) { // serves as initializer
                 (all_tag_resources as any).value[tag_id] = [];
                 return
             }
             if (!(tag_id in all_tag_resources.value))
                 (all_tag_resources as any).value[tag_id] = [];
             (all_tag_resources as any).value[tag_id].push(resource_id);
+        },
+        update_suggestions_list: async function () {
+            tags_suggestions_list.value = await this.list_all_tags(false)
+            this.filter_suggestions()
         },
         add_tag: async function () {
             if (this.tag_name_input == "") return
@@ -177,7 +195,6 @@ export default defineComponent({
                     this.tag_resource(tag_id, resource_id);
                     this.sort_tags_list()
                     await this.list_tags(resource_id)
-                    this.filter_suggestions()
                     this.$emit('add_log', 'DecoPanel', 'add tag ok');
                     this.$emit('color_node', resource_id, tag.color, tag.priority, true)
                 })
@@ -221,7 +238,7 @@ export default defineComponent({
             tags_list.value = []
             for (const x in all_tags.value) { // for all tags
                 const tag = (all_tags as any).value[x]
-                const tr : any = await this.list_tag_resources(tag)
+                const tr: any = await this.list_tag_resources(tag)
                 if (tr.indexOf(resource_id) != -1) {
                     (tags_list as any).value.push(tag)
                 }
@@ -259,21 +276,27 @@ export default defineComponent({
                     throw err
                 })
         },
-        delete_tag: async function () {
-            const tags = await this.list_all_tags(false).then((arr) => { return arr; })
+        delete_tag: async function (tag_id: string) {
             try {
-                assert(!isNaN(parseInt(this.tag_name_input)))
+                assert(!isNaN(parseInt(tag_id)))
             } catch {
                 return
             }
-            if (tags.filter((tag: any) => tag.uid == parseInt(this.tag_name_input)).length == 0) return
+            const tag = this.get_tag_by_id(tag_id);
+            if (tag == null) return
+            const tr: any = await this.list_tag_resources(tag)
+            if (tr.length > 0) {
+                if (!confirm(`there are ${tr.length} resources with this tag? delete for sure?`)) return
+            }
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
-                `/delete_tag?uid=${this.tag_name_input}`
+                `/delete_tag?uid=${tag_id}`
             this.$emit('add_log', 'DecoPanel', 'delete tag...');
             axios.post(request_url)
                 .then((response) => {
-                    all_tags.value = all_tags.value.filter((tag: any) => tag.uid != this.tag_name_input)
+                    all_tags.value = all_tags.value.filter((tag: any) => tag.uid != parseInt(tag_id))
+                    tags_list.value = all_tags.value
+                    this.sort_tags_list()
                     this.$emit('add_log', 'DecoPanel', 'delete tag ok');
                 })
                 .catch(err => {
@@ -298,14 +321,13 @@ export default defineComponent({
                     this.$emit('add_log', 'DecoPanel', 'diss tag ok');
                     delete (all_tag_resources as any).value[tag_id]
                     this.list_tag_resources(this.get_tag_by_id(tag_id))
-                    const existing_tags : any = await this.list_tags(resource_id)
-                    tags_suggestions_list.value = all_tags.value
-                    this.filter_suggestions()
+                    const existing_tags: any = await this.list_tags(resource_id)
+                    this.update_suggestions_list()
                     await this.$emit('color_node', resource_id, 'blue', tag.priority, true)
-                    for(const et in existing_tags){
-                        this.$emit('color_node', resource_id, 
-                            existing_tags[et].color, 
-                            existing_tags[et].priority, 
+                    for (const et in existing_tags) {
+                        this.$emit('color_node', resource_id,
+                            existing_tags[et].color,
+                            existing_tags[et].priority,
                             false)
                     }
                 })
@@ -331,7 +353,6 @@ export default defineComponent({
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'update tag color ok');
                     (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).color = new_color;
-                    tag_focus.value = response.data
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'update tag color error');
@@ -363,7 +384,7 @@ export default defineComponent({
                 })
 
         },
-        color_nodes: async function(tag: any, override : boolean){
+        color_nodes: async function (tag: any, override: boolean) {
             const tr = await this.list_tag_resources(tag)
             // tr is the array of nodes to color <color>
             for (const x in tr) {
@@ -372,14 +393,13 @@ export default defineComponent({
         },
         click_tag: async function (tag: any) {
             (tag_focus as any).value = tag
-            const resource_id = this.$props.data_panel.uid;
             this.color_nodes(tag, true)
         },
         // lists the resources associated with this tag
-        list_tag_resources: async function(tag: any){
+        list_tag_resources: async function (tag: any) {
             const tag_id = tag.uid;
             var all_tr = (all_tag_resources as any).value
-            if(!(tag_id in all_tr)){
+            if (!(tag_id in all_tr)) {
                 var data = await this.list_tag_resources_pull_from_online(tag);
                 this.tag_resource(tag_id, null)
                 for (const i of data) {
@@ -406,15 +426,22 @@ export default defineComponent({
                     throw err
                 })
         },
-        list_all_tag_resources: function(){
-            for(const i in all_tags.value){
+        list_all_tag_resources: function () {
+            for (const i in all_tags.value) {
                 this.list_tag_resources(all_tags.value[i])
             }
         },
-        color_all_nodes: function(){
-            for(const x in (all_tags as any).value){
+        color_all_nodes: function () {
+            for (const x in (all_tags as any).value) {
                 this.color_nodes((all_tags as any).value[x], false)
             }
+        },
+        repull: async function () {
+            all_tags.value = [];
+            all_tag_resources.value = {};
+            await this.list_all_tags(true)
+            await this.list_all_tag_resources()
+            this.color_all_nodes()
         }
     },
     data() {
@@ -436,9 +463,7 @@ export default defineComponent({
             tag_focus.value = null
         },
         async 'project_id'(new_value) {
-            await this.list_all_tags(true)
-            await this.list_all_tag_resources()
-            this.color_all_nodes()
+            await this.repull()
         }
     },
     computed: {
@@ -460,6 +485,9 @@ export default defineComponent({
             set: function (nv: number) {
                 (tag_focus as any).value.priority = nv
             }
+        },
+        chosen_tag() {
+            return tag_focus.value ? (tag_focus as any).value.uid : ''
         }
     }
 });
