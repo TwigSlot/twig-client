@@ -152,7 +152,7 @@ export default defineComponent({
         color_node: function (node_id: any, color: any, priority: number, override: boolean) {
             const n = graphData.nodes.value[`node${node_id}`]
             if (!n) return
-            console.log(n, priority)
+            if(!priority) priority = 0;
             if (override) {
                 n.color = color;
                 n.highest_priority = -100;

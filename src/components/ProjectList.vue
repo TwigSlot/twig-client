@@ -43,7 +43,7 @@
           >
           <el-button
             link
-            type="primary"
+            type="danger"
             size="small"
             @click="delete_project(scope.$index, scope.row)"
             >Delete</el-button
