@@ -12,30 +12,26 @@
         Failed to Connect! Click to retry
       </button>
     </div>
-
-    <el-table :data="showcased_projects" style="width: 100%">
-    <el-table-column v-for="column in columns" 
-                     :key="column.prop"
-                     :prop="column.prop"
-                     :label="column.label"
-                     :formatter="column.formatter"
-                     :min-width="column.minWidth">
+    <el-table
+      :data="querySearch(showcased_projects, search)"
+      style="width: 100%"
+    >
+      <el-table-column
+        v-for="column in columns"
+        :key="column.prop"
+        :prop="column.prop"
+        :label="column.label"
+        :formatter="column.formatter"
+        :min-width="column.minWidth"
+      >
       </el-table-column>
       <el-table-column fixed="right" label="Operations">
         <template #header>
-          <el-autocomplete
-            clearable
-            v-model="state"
-            :fetch-suggestions="querySearch"
-            popper-class="my-autocomplete"
-            placeholder="Please input"
-            @select="handleSelect"
-          >
-            <template #default="{ item }">
-              <div class="value">{{ item.owner }}</div>
-              <span class="link">{{ item.project.description }}</span>
-            </template>
-          </el-autocomplete>
+          <el-input
+            v-model="search"
+            size="small"
+            placeholder="Type to search"
+          />
         </template>
         <template #default="scope">
           <el-button
@@ -91,6 +87,15 @@
 .my-autocomplete li .highlighted .addr {
   color: blue;
 }
+
+.el-table .warning-row {
+  background: red;
+  font-weight: bold;
+}
+
+.el-table tr:nth-child(odd) {
+    background-color: #845353;
+}
 </style>
 
 <script lang="ts">
@@ -101,7 +106,8 @@ const kratos_user_id: any = ref("");
 const username = ref("");
 const showcased_projects: any = ref([]);
 const connection_status: any = ref("connecting...");
-const state = ref("");
+const search = ref("");
+const table = ref("");
 const links = ref<ILinkItem[]>([]);
 
 interface ILinkItem {
@@ -122,7 +128,8 @@ export default defineComponent({
       kratos_user_id,
       username,
       connection_status,
-      state,
+      search,
+      table,
       columns: [
         {
           prop: "project.name",
@@ -138,8 +145,8 @@ export default defineComponent({
           prop: "owner",
           label: "Owner",
           formatter: (row: any) => {
-            return `${row.owner.first_name} ${row.owner.last_name}`
-        }
+            return `${row.owner.first_name} ${row.owner.last_name}`;
+          },
         },
       ],
     };
@@ -191,7 +198,6 @@ export default defineComponent({
       axios
         .get(request_url)
         .then((response) => {
-          console.log(response.data.projects, "lll");
           showcased_projects.value = response.data.projects;
           if (!this.$props.explore) {
             kratos_user_id.value = response.data.user.kratos_user_id;
@@ -210,39 +216,24 @@ export default defineComponent({
                 description: "dummy description 1",
               },
             },
-            {
-              owner: "fake owner 2",
-              project: {
-                uid: 1,
-                name: "dummy project 2",
-                description: "dummy description 2",
-              },
-            },
           ];
           links.value = showcased_projects.value;
         });
     },
     onLoadSearch: function () {},
-    querySearch: function (queryString: string, cb: Function) {
-      const results = queryString
-        ? links.value.filter(this.createFilter(queryString))
-        : links.value;
-      cb(results);
-    },
-    createFilter: function (queryString: string) {
-      return (res: any) => {
-        const { description, name } = res.project;
-        const owner = res.owner;
-        return (
-          name.toLowerCase().indexOf(queryString.toLowerCase()) === 0 ||
-          description.toLowerCase().indexOf(queryString.toLowerCase()) === 0 ||
-          owner.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
-      };
+    querySearch: function (datatable: any, queryString: string) {
+      return datatable.filter(
+        (data: any) =>
+          !queryString ||
+          data.project.name.toLowerCase().includes(queryString.toLowerCase()) ||
+          data.project.description
+            .toLowerCase()
+            .includes(queryString.toLowerCase())
+      );
     },
     handleSelect: function (item: ILinkItem) {
       showcased_projects.value = [item];
-    },
+    }
   },
   mounted() {
     kratos_user_id.value = this.$route.params.id;
