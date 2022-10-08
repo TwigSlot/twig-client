@@ -60,7 +60,8 @@
                     Node Size:
                 </h1>
                 <div class="slider-demo-block">
-                    <el-slider style="width: 10rem" v-model="data_panel.size" @change="node_size_change" />
+                    Tag Priority:
+                    <el-slider style="width: 10rem" v-model="tag_priority" @change="tag_priority_change"/>
                 </div>
             </div>
         </div>
@@ -470,6 +471,7 @@ export default defineComponent({
         async 'data_panel.uid'(new_value) {
             await this.list_tags(this.$props.data_panel.uid)
             this.filter_suggestions()
+            showing_tags_for.value = "Node " + new_value
             tag_focus.value = null
         },
         async 'project_id'(new_value) {
