@@ -110,6 +110,19 @@ body {
   float: left;
 }
 
+.deco-panel {
+  background-color: yellowgreen;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+.graph-logs-panel {
+  background-color: yellow;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
 .info-panel-outer {
   position: relative;
   clear: left;

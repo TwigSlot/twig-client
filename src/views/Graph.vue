@@ -1,19 +1,25 @@
 <template>
     <div id="graph" ref="div_ref">
         <v-network-graph ref="graph_ref" v-model:selected-nodes="graphData.selectedNodes"
-            v-model:selected-edges="graphData.selectedEdges" :nodes="graphData.nodes"
-            :edges="graphData.edges" :layouts="graphData.layouts"
-            :configs="graphData.configs" :event-handlers="eventHandlers" />
+            v-model:selected-edges="graphData.selectedEdges" :nodes="graphData.nodes" :edges="graphData.edges"
+            :layouts="graphData.layouts" :configs="graphData.configs" :event-handlers="eventHandlers" />
     </div>
-    <DataPanelVue @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
-        :data_panel="dataPanel" @updatedDataPanel="updatedDataPanel"></DataPanelVue>
-    <ControlPanelVue @home="home" @save-locations="saveLocations" @customkeydown="keydown" ref="control_panel_ref">
+    <DataPanelVue @add_log="add_log" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown" :data_panel="dataPanel"
+        @updatedDataPanel="updatedDataPanel"></DataPanelVue>
+    <ControlPanelVue @add_log="add_log" @home="home" @save-locations="saveLocations" @customkeydown="keydown"
+        ref="control_panel_ref">
     </ControlPanelVue>
+    <DecoPanelVue @add_log="add_log" ref="deco_panel_ref" @color_node="color_node" @plain_graph="plain_graph" :data_panel="dataPanel"
+        :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
+        :selected_nodes="graphData.selectedNodes"></DecoPanelVue>
+    <GraphLogsVue ref="graph_logs_ref"></GraphLogsVue>
 </template>
 <script lang="ts">
 import axios from "axios";
 import DataPanelVue from "../components/DataPanel.vue";
 import ControlPanelVue from "../components/ControlPanel.vue";
+import DecoPanelVue from "../components/DecoPanel.vue";
+import GraphLogsVue from "../components/GraphLogs.vue";
 import { defineComponent, reactive, ref } from "vue";
 import graphData from "../graphData"
 var dataPanel: any = ref({});
@@ -21,6 +27,8 @@ var dataPanel: any = ref({});
 const project_id: any = ref("");
 const graph_ref: any = ref();
 const control_panel_ref: any = ref();
+const deco_panel_ref: any = ref();
+const graph_logs_ref: any = ref();
 var pause_key_down: boolean = false;
 
 function delete_node(node: any) {
@@ -45,8 +53,11 @@ function delete_edge(edge: any) {
         })
 }
 function add_node(raw: any) {
+    if (!('color' in raw)) raw.color = 'blue'
+    if (!('size' in raw)) raw.size = 20
+    else raw.size = parseInt(raw.size)
     graphData.nodes.value[`node${raw.uid}`] = raw
-    if('pos_x' in raw && 'pos_y' in raw){
+    if ('pos_x' in raw && 'pos_y' in raw) {
         graphData.layouts.value.nodes[`node${raw.uid}`] = {
             'x': raw['pos_x'],
             'y': raw['pos_y']
@@ -76,7 +87,6 @@ function get_items() {
         .then(response => {
             graphData.nodes.value = {}
             graphData.edges.value = {}
-            console.log(response.data)
             var edge_queue: Array<Object> = []
             for (const item of response.data.items) {
                 if (item instanceof Array) {
@@ -96,7 +106,9 @@ export default defineComponent({
     name: "Graph",
     components: {
         DataPanelVue,
-        ControlPanelVue
+        ControlPanelVue,
+        DecoPanelVue,
+        GraphLogsVue
     },
     data() {
         return {
@@ -108,11 +120,10 @@ export default defineComponent({
             eventHandlers: {
                 // wildcard: capture all events
                 "*": (type: string, event: any) => {
-                    console.log(type, event)
                     if (type == 'node:pointerover') {
                         dataPanel.value = graphData.nodes.value[event.node]
-                    } else if (type == 'node:pointerout'){
-                        if(selected_nodes.value){
+                    } else if (type == 'node:pointerout') {
+                        if (selected_nodes.value.length > 0) {
                             dataPanel.value = graphData.nodes.value[selected_nodes.value[0]]
                         }
                     } else if (type == 'view:click') {
@@ -129,8 +140,33 @@ export default defineComponent({
         }
     },
     methods: {
-        updatedDataPanel: function(){
-            dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`] 
+        add_log: function (type: string, message: string) {
+            (this.$refs.graph_logs_ref as any).add_log(type, message);
+        },
+        plain_graph: function(){
+            for(const x in graphData.nodes.value){
+                graphData.nodes.value[x].color = 'blue'
+                graphData.nodes.value[x].highest_priority = -100
+            }
+        },
+        color_node: function (node_id: any, color: any, priority: number, override: boolean) {
+            const n = graphData.nodes.value[`node${node_id}`]
+            if (!n) return
+            console.log(n, priority)
+            if (override) {
+                n.color = color;
+                n.highest_priority = -100;
+                return;
+            }
+            if (!('highest_priority' in n)) n.highest_priority = -100;
+            if (priority >= n.highest_priority) {
+                n.color = color
+                n.highest_priority = priority
+            }
+        },
+
+        updatedDataPanel: function () {
+            dataPanel.value = graphData.nodes.value[`node${dataPanel.value.uid}`]
         },
         handle_view_click: function (event: any) {
             const selected_mode = (this.$store.state as any).selected_mode
@@ -179,7 +215,7 @@ export default defineComponent({
             if (selected_mode == 'add-edge') {
                 if (event.length == 1) {
                     (this.$store.state as any).edge_source_node = event[0]
-                }else {
+                } else {
                     (this.$store.state as any).edge_source_node = null
                 }
             }
@@ -206,10 +242,10 @@ export default defineComponent({
                 bottom: maxY + padding,
             });
         },
-        saveLocations: function(){
+        saveLocations: function () {
             const node_pos_raw = (this.$refs.graph_ref as any).layouts.nodes
-            const node_pos : any = {}
-            for(var n in node_pos_raw){
+            const node_pos: any = {}
+            for (var n in node_pos_raw) {
                 node_pos[n.substring(4)] = {
                     x: node_pos_raw[n].x,
                     y: node_pos_raw[n].y,
@@ -218,20 +254,21 @@ export default defineComponent({
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${project_id.value}` +
                 `/positions/update`;
-            const cp_ref : any= (this.$refs.control_panel_ref as any);
+            const cp_ref: any = (this.$refs.control_panel_ref as any);
             cp_ref.save_locations_status = 'saving...'
             axios.post(request_url, node_pos).then((response) => {
-                if(response.status == 200){
+                if (response.status == 200) {
+                    this.add_log('Location', "Saved");
                     (cp_ref).save_locations_status = 'saved'
-                    setTimeout(() => { 
+                    setTimeout(() => {
                         (cp_ref).save_locations_status = ''
                     }, 1000)
-                }else{
+                } else {
                     throw 'err'
                 }
             }).catch((error) => {
                 (cp_ref).save_locations_status = 'error!'
-                setTimeout(() => { 
+                setTimeout(() => {
                     (cp_ref).save_locations_status = ''
                 }, 1000)
             })

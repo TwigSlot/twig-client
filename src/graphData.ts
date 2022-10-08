@@ -36,6 +36,10 @@ var configs = vNG.defineConfigs({
   },
   node: {
     selectable: true,
+    normal: {
+      color: node => ('color' in node ? node.color : 'blue'),
+      radius: node => ('size' in node ? node.size : 20),
+    }
   },
   edge: {
     selectable: true,
