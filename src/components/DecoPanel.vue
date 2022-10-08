@@ -27,7 +27,7 @@
                             {{ chosen_tag == '' ?  `Left-click a tag to edit it` : `Edit Tag : ${ chosen_tag }` }}
                         </text>
                         <br>
-                        <div v-if="tag_color != ''">
+                        <div v-if="tag_focus != null">
 
                             Tag Color:
                             <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Color"
@@ -49,6 +49,7 @@
                             any).uid})`}}</option>
                         </datalist>
                         <input class="button is-primary" type="button" value="Color Graph" @click="color_all_nodes" />
+                        <input class="button is-primary" type="button" value="Plain Graph" @click="plain_graph" />
                         <input class="button is-primary" type="button" value="Add Tag" @click="add_tag"
                             :disabled="disable_add" />
                         <input class="button is-primary" type="button" value="List ALL Tags in Project"
@@ -344,6 +345,7 @@ export default defineComponent({
             if (tag_focus.value == null) return
             const tag_id = (tag_focus as any).value.uid
             const new_color = e.target.value
+            if(new_color == '') return;
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
                 `/tag/${tag_id}` +
@@ -435,6 +437,9 @@ export default defineComponent({
             for (const x in (all_tags as any).value) {
                 this.color_nodes((all_tags as any).value[x], false)
             }
+        },
+        plain_graph: function(){
+            this.$emit('plain_graph')
         },
         repull: async function () {
             all_tags.value = [];

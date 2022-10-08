@@ -9,7 +9,7 @@
     <ControlPanelVue @add_log="add_log" @home="home" @save-locations="saveLocations" @customkeydown="keydown"
         ref="control_panel_ref">
     </ControlPanelVue>
-    <DecoPanelVue @add_log="add_log" ref="deco_panel_ref" @color_node="color_node" :data_panel="dataPanel"
+    <DecoPanelVue @add_log="add_log" ref="deco_panel_ref" @color_node="color_node" @plain_graph="plain_graph" :data_panel="dataPanel"
         :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
     <GraphLogsVue ref="graph_logs_ref"></GraphLogsVue>
 </template>
@@ -141,6 +141,12 @@ export default defineComponent({
     methods: {
         add_log: function (type: string, message: string) {
             (this.$refs.graph_logs_ref as any).add_log(type, message);
+        },
+        plain_graph: function(){
+            for(const x in graphData.nodes.value){
+                graphData.nodes.value[x].color = 'blue'
+                graphData.nodes.value[x].highest_priority = -100
+            }
         },
         color_node: function (node_id: any, color: any, priority: number, override: boolean) {
             const n = graphData.nodes.value[`node${node_id}`]
