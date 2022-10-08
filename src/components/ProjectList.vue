@@ -4,78 +4,60 @@
       <button class="button is-primary is-light" @click="add_project">
         Add Project
       </button>
-      <button v-if="connection_status != 'connected'" class="button is-primary is-danger" @click="reconnect">
+      <button
+        v-if="connection_status != 'connected'"
+        class="button is-primary is-danger"
+        @click="reconnect"
+      >
         Failed to Connect! Click to retry
       </button>
     </div>
-
-    <table
-      class="table is-bordered is-fullwidth"
-      aria-describedby="project-table"
+    <el-table
+      :data="querySearch(showcased_projects, search)"
+      style="width: 100%"
     >
-      <thead>
-        <tr>
-          <th><abbr title="project-name">Project</abbr></th>
-          <th><abbr title="description">Description</abbr></th>
-          <th><abbr title="owner">Owner</abbr></th>
-          <th><abbr title="edit">Edit</abbr></th>
-        </tr>
-      </thead>
-      <tbody v-for="project in showcased_projects" >
-        <td>
-          <a :href="'/project/' + `${project.project.uid}`">{{
-            project.project.name
-          }}</a>
-        </td>
-        <td>
-          {{ project.project.description }}
-        </td>
-        <td>
-          <a :href="'/user/' + `${project.owner.kratos_user_id}`">{{ project.owner.first_name + ' ' + project.owner.last_name }}</a>
-        </td>
-        <td
-          v-if="
-            project.owner.kratos_user_id == $store.state.kratos_user_id ||
-            connection_status != 'connected'
-          "
-        >
-          <div class="button-container">
-            <div class="float-child">
-              <button
-                class="button is-primary is-light is-small is-pulled-left"
-                v-if="
-                  project.owner.kratos_user_id == $store.state.kratos_user_id ||
-                  connection_status != 'connected'
-                "
-                @click="edit_project(project.project.uid)"
-              >
-                Edit
-              </button>
-            </div>
-            <div class="float-child">
-              <button
-                class="button is-primary is-dark is-small is-pulled-left is-danger"
-                v-if="project.owner.kratos_user_id == $store.state.kratos_user_id || 
-                  connection_status != 'connected'"
-                @click="delete_project(project.project.uid)"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </td>
-        <td v-else></td>
-
-      </tbody>
-    </table>
+      <el-table-column
+        v-for="column in columns"
+        :key="column.prop"
+        :prop="column.prop"
+        :label="column.label"
+        :formatter="column.formatter"
+        :min-width="column.minWidth"
+      >
+      </el-table-column>
+      <el-table-column fixed="right" label="Operations">
+        <template #header>
+          <el-input
+            v-model="search"
+            size="small"
+            placeholder="Type to search"
+          />
+        </template>
+        <template #default="scope">
+          <el-button
+            link
+            type="primary"
+            size="small"
+            @click="edit_project(scope.$index, scope.row)"
+            >Edit</el-button
+          >
+          <el-button
+            link
+            type="primary"
+            size="small"
+            @click="delete_project(scope.$index, scope.row)"
+            >Delete</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .main-container {
   margin: 20px !important;
-  font-family: 'Noto Sans', sans-serif;
-
+  font-family: "Noto Sans", sans-serif;
 }
 
 .button-container {
@@ -89,16 +71,53 @@
 .float-child:first-child {
   margin-right: 10px;
 }
+
+.my-autocomplete li {
+  line-height: normal;
+  padding: 7px;
+}
+.my-autocomplete li .name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.my-autocomplete li .addr {
+  font-size: 12px;
+  color: #b4b4b4;
+}
+.my-autocomplete li .highlighted .addr {
+  color: blue;
+}
+
+.el-table .warning-row {
+  background: red;
+  font-weight: bold;
+}
+
+.el-table tr:nth-child(odd) {
+    background-color: #845353;
+}
 </style>
 
 <script lang="ts">
 import axios from "axios";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 const kratos_user_id: any = ref("");
 const username = ref("");
 const showcased_projects: any = ref([]);
 const connection_status: any = ref("connecting...");
+const search = ref("");
+const table = ref("");
+const links = ref<ILinkItem[]>([]);
+
+interface ILinkItem {
+  owner: string;
+  projects: {
+    uid: number;
+    name: string;
+    description: string;
+  }[];
+}
 
 export default defineComponent({
   name: "ProjectList",
@@ -109,11 +128,32 @@ export default defineComponent({
       kratos_user_id,
       username,
       connection_status,
+      search,
+      table,
+      columns: [
+        {
+          prop: "project.name",
+          label: "Project",
+          minWidth: "100px",
+        },
+        {
+          prop: "project.description",
+          label: "Description",
+          minWidth: "150px",
+        },
+        {
+          prop: "owner",
+          label: "Owner",
+          formatter: (row: any) => {
+            return `${row.owner.first_name} ${row.owner.last_name}`;
+          },
+        },
+      ],
     };
   },
   methods: {
-    reconnect: function(){
-      this.get_projects()
+    reconnect: function () {
+      this.get_projects();
     },
     add_project: function () {
       const request_url =
@@ -124,20 +164,28 @@ export default defineComponent({
         showcased_projects.value.unshift(response.data);
       });
     },
-    delete_project: function (project_id: any) {
-      if(!window.confirm(`Do you really want to delete project ${project_id}`)) return;
+    delete_project: function (index: number, row: any) {
+      if (
+        !window.confirm(
+          `Do you really want to delete project ${row.project.uid}`
+        )
+      )
+        return;
       const request_url =
         `${import.meta.env.VITE_API_URL}` +
-        `/project/${project_id}` +
+        `/project/${row.project.uid}` +
         `/delete`;
       axios.post(request_url).then((response) => {
         showcased_projects.value = showcased_projects.value.filter(
-          (ele: any) => ele.project.uid != project_id
+          (ele: any) => ele.project.uid != row.project.uid
         );
       });
     },
-    edit_project: function (project_id: any) {
-      this.$router.push("/project-edit/" + project_id);
+    edit_project: function (index: number, row: any) {
+      this.$router.push({
+        path: "/project-edit/",
+        query: { id: row.project.uid },
+      });
     },
     get_projects: function () {
       var request_url = "";
@@ -156,7 +204,6 @@ export default defineComponent({
             username.value = response.data.user.username;
           }
           connection_status.value = "connected";
-          console.log(response.data.projects)
         })
         .catch((err) => {
           connection_status.value = "failed to connect, err = " + err;
@@ -170,8 +217,23 @@ export default defineComponent({
               },
             },
           ];
+          links.value = showcased_projects.value;
         });
     },
+    onLoadSearch: function () {},
+    querySearch: function (datatable: any, queryString: string) {
+      return datatable.filter(
+        (data: any) =>
+          !queryString ||
+          data.project.name.toLowerCase().includes(queryString.toLowerCase()) ||
+          data.project.description
+            .toLowerCase()
+            .includes(queryString.toLowerCase())
+      );
+    },
+    handleSelect: function (item: ILinkItem) {
+      showcased_projects.value = [item];
+    }
   },
   mounted() {
     kratos_user_id.value = this.$route.params.id;
@@ -188,6 +250,10 @@ export default defineComponent({
         this.get_projects();
       },
     },
+  },
+  computed: {
+    console: () => console,
+    window: () => window,
   },
 });
 </script>
