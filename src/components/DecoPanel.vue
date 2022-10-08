@@ -28,7 +28,6 @@
                         </text>
                         <br>
                         <div v-if="tag_focus != null">
-
                             Tag Color:
                             <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Color"
                                 :value="tag_color" @input="preview_tag_color" @change="update_tag_color"
@@ -38,7 +37,6 @@
                             <el-slider style="width: 10rem" v-model="tag_priority" @change="tag_priority_change" />
                         </div>
                         <div>
-
                             Tag Name:
                             <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Name"
                                 v-model="tag_name" @change="update_tag_name" @focus="pauseKeyDown" @blur="handleBlur()"
@@ -50,7 +48,7 @@
                         </datalist>
                         <input class="button is-primary" type="button" value="Color Graph" @click="color_all_nodes" />
                         <input class="button is-primary" type="button" value="Plain Graph" @click="plain_graph" />
-                        <input class="button is-primary" type="button" value="Add Tag" @click="add_tag"
+                        <input class="button is-primary" type="button" :value="add_tag_button" @click="batch_add_tag()"
                             :disabled="disable_add" />
                         <input class="button is-primary" type="button" value="List ALL Tags in Project"
                             @click="list_all_tags(true)" />
@@ -113,7 +111,7 @@ const tag_name_input = ref("");
 const hide_deco_panel = ref(false);
 export default defineComponent({
     name: "DecoPanel",
-    props: ["data_panel", "project_id"],
+    props: ["data_panel", "project_id", "selected_nodes"],
     methods: {
         node_size_change: function (e: any) {
             const resource_id = this.$props.data_panel.uid;
@@ -175,16 +173,23 @@ export default defineComponent({
             tags_suggestions_list.value = await this.list_all_tags(false)
             this.filter_suggestions()
         },
-        add_tag: async function () {
-            if (this.tag_name_input == "") return
+        batch_add_tag: async function(){
+            const tag_name = this.tag_name_input
             const tags = await this.list_all_tags(false)
-            var first_tag_matching_name = this.tag_exists(tags, this.tag_name_input)
+            var first_tag_matching_name = this.tag_exists(tags, tag_name)
             if (first_tag_matching_name == null) {
                 first_tag_matching_name = await this.create_tag().then((res) => { return res; })
             }
-            const resource_id = this.$props.data_panel.uid;
+            const sn = this.$props.selected_nodes
+            for(const x of sn){
+                this.add_tag(x.substr(4), first_tag_matching_name)
+            }
+        },
+        add_tag: async function (resource_id : any, tag : any) {
+            if(!tag) return
+            const tags = await this.list_all_tags(false)
+            if(!resource_id) resource_id = this.$props.data_panel.uid;
             if (!resource_id) return
-            const tag = (first_tag_matching_name as any)
             const tag_id = tag.uid
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
@@ -196,6 +201,7 @@ export default defineComponent({
                     this.tag_resource(tag_id, resource_id);
                     this.sort_tags_list()
                     await this.list_tags(resource_id)
+                    this.filter_suggestions()
                     this.$emit('add_log', 'DecoPanel', 'add tag ok');
                     this.$emit('color_node', resource_id, tag.color, tag.priority, true)
                 })
@@ -344,6 +350,7 @@ export default defineComponent({
         update_tag_color: function (e: any) {
             if (tag_focus.value == null) return
             const tag_id = (tag_focus as any).value.uid
+            const tag: any = this.get_tag_by_id(tag_id)
             const new_color = e.target.value
             if(new_color == '') return;
             const request_url = `${import.meta.env.VITE_API_URL}` +
@@ -354,7 +361,7 @@ export default defineComponent({
             axios.post(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'update tag color ok');
-                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).color = new_color;
+                    tag.color = new_color;
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'update tag color error');
@@ -368,6 +375,7 @@ export default defineComponent({
         update_tag_name: function (e: any) {
             if (tag_focus.value == null) return;
             const tag_id = (tag_focus as any).value.uid
+            const tag : any = this.get_tag_by_id(tag_id)
             const new_name = e.target.value
             const request_url = `${import.meta.env.VITE_API_URL}` +
                 `/project/${this.$props.project_id}` +
@@ -377,8 +385,7 @@ export default defineComponent({
             axios.post(request_url)
                 .then((response) => {
                     this.$emit('add_log', 'DecoPanel', 'update tag name ok');
-                    (all_tags.value.find((tag: any) => tag.uid == tag_id) as any).name = new_name;
-                    tag_focus.value = response.data
+                    tag.name = new_name
                 })
                 .catch(err => {
                     this.$emit('add_log', 'DecoPanel', 'update tag name error');
@@ -453,7 +460,6 @@ export default defineComponent({
         return {
             tags_list,
             tags_suggestions_list,
-            showing_tags_for,
             disable_add,
             tag_focus,
             tag_name_input,
@@ -464,7 +470,6 @@ export default defineComponent({
         async 'data_panel.uid'(new_value) {
             await this.list_tags(this.$props.data_panel.uid)
             this.filter_suggestions()
-            showing_tags_for.value = "Node " + new_value
             tag_focus.value = null
         },
         async 'project_id'(new_value) {
@@ -472,6 +477,13 @@ export default defineComponent({
         }
     },
     computed: {
+        showing_tags_for(){
+            if(!this.$props.selected_nodes) return "Select a node"
+            const sn = this.$props.selected_nodes
+            const len = sn.length 
+            if(len == 1) return `Node ${sn[0].substr(4)}`
+            return `${len} nodes`
+        },
         tag_name: {
             get: function () {
                 return tag_focus.value == null ? '' : (tag_focus as any).value.name
@@ -493,6 +505,14 @@ export default defineComponent({
         },
         chosen_tag() {
             return tag_focus.value ? (tag_focus as any).value.uid : ''
+        },
+        add_tag_button(){
+            if(!this.$props.selected_nodes) return "Add Tag"
+            const len = this.$props.selected_nodes.length 
+            if(len <= 1){
+                return "Add Tag"
+            } 
+            return `Add Tag (${len})` 
         }
     }
 });

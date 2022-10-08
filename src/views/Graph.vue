@@ -10,7 +10,8 @@
         ref="control_panel_ref">
     </ControlPanelVue>
     <DecoPanelVue @add_log="add_log" ref="deco_panel_ref" @color_node="color_node" @plain_graph="plain_graph" :data_panel="dataPanel"
-        :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"></DecoPanelVue>
+        :project_id="project_id" @pauseKeyDown="pauseKeyDown" @resumeKeyDown="resumeKeyDown"
+        :selected_nodes="graphData.selectedNodes"></DecoPanelVue>
     <GraphLogsVue ref="graph_logs_ref"></GraphLogsVue>
 </template>
 <script lang="ts">
