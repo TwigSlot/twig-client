@@ -12,9 +12,9 @@
     <div class="control">
       <a target="_blank" :href="data_panel.link">
         <button class="button is-dark info-panel-item">Open</button>
-        <button @click="hide_description = !hide_description"
-          class="button info-panel-item">{{ hide_description ? "Show" : "Hide"}} description</button>
       </a>
+      <button @click="hide_description = !hide_description" class="button info-panel-item">{{ hide_description ? "Show"
+      : "Hide"}} description</button>
       <text class="subtitle is-4 data-panel-item">{{ retrieval_status }}</text>
     </div>
     <div class="control" :style="{marginTop: '10px'}" v-if="!hide_description">
@@ -25,11 +25,11 @@
 </template>
 
 <style lang="scss" scoped>
-
-.control{
+.control {
   align-items: center;
   display: flex;
 }
+
 .data-panel-item {
   margin-inline: 0.2rem;
   color: white;
