@@ -19,11 +19,16 @@
       <el-table-column
         v-for="column in columns"
         :key="column.prop"
-        :prop="column.prop"
         :label="column.label"
+        :prop="column.prop"
         :formatter="column.formatter"
         :min-width="column.minWidth"
       >
+        <template v-slot="scope" v-if="column.prop === 'project_name'">
+          <a :href="'/project/' + `${scope.row.project.uid}`">{{
+            scope.row.project.name
+          }}</a>
+        </template>
       </el-table-column>
       <el-table-column fixed="right" label="Operations">
         <template #header>
@@ -88,14 +93,7 @@
   color: blue;
 }
 
-.el-table .warning-row {
-  background: red;
-  font-weight: bold;
-}
 
-.el-table tr:nth-child(odd) {
-    background-color: #845353;
-}
 </style>
 
 <script lang="ts">
@@ -132,9 +130,8 @@ export default defineComponent({
       table,
       columns: [
         {
-          prop: "project.name",
+          prop: "project_name",
           label: "Project",
-          minWidth: "100px",
         },
         {
           prop: "project.description",
