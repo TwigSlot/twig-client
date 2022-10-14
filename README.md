@@ -1,5 +1,7 @@
 # TWIG Client
 
+Client for [twigslot.com](https://twigslot.com)
+
 ## Development Setup
 ```shell
 git clone http://github.com/twigslot/twig-client
