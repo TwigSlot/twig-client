@@ -11,6 +11,8 @@ import ProjectList from "../components/ProjectList.vue";
 import CardComponent from "../components/CardComponent.vue";
 import axios from "axios";
 
+
+
 const sdk = login.sdk;
 const default_profile_picture = "/profile_pic.jpeg";
 const user : any = ref({
@@ -97,6 +99,7 @@ export default defineComponent({
           })
       }
     })
+    document.title = this.user.firstName + " " + this.user.lastName
   },
 });
 </script>
