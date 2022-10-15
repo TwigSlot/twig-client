@@ -5,6 +5,8 @@
 import { defineComponent } from 'vue';
 import ProjectList from '../components/ProjectList.vue';
 
+document.title = "Explore"
+
 export default defineComponent({
     name: "Explore",
     components: {

@@ -24,6 +24,8 @@ import { defineComponent, reactive, ref } from "vue";
 import graphData from "../graphData"
 var dataPanel: any = ref({});
 
+document.title = "Editing Project"
+
 const project_id: any = ref("");
 const graph_ref: any = ref();
 const control_panel_ref: any = ref();
