@@ -1,6 +1,6 @@
 # TWIG Client
 
-Client for [twigslot.com](https://twigslot.com)
+Web Client for [twigslot.com](https://twigslot.com)
 
 ## Development Setup
 ```shell
