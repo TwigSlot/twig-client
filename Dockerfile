@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN npm install
 COPY ./ . 
 ENV NODE_OPTIONS="--max-old-space-size=2048"
-RUN npm run build
+RUN npm run build-no-ts
 
 FROM nginx as production-stage
 RUN mkdir /app
