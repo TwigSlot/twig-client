@@ -1,5 +1,5 @@
 <template>
-    <div class="deco-panel">
+    <div class="deco-panel" v-if="!this.$store.state.mobileView">
         <h1 class="title is-4 deco-text">
             Tags: {{ showing_tags_for }}
             <button class="button" @click="hide_deco_panel = !hide_deco_panel">

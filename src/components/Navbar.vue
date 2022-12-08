@@ -2,6 +2,10 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" href="/"> TWIGSLOT </a>
+      <a class="navbar-item" @click="toggleView" >
+        <text v-if="this.$store.state.mobileView"> Mobile View </text>
+        <text v-else> Desktop View </text>
+      </a>
       <a
         role="button"
         class="navbar-burger"
@@ -108,6 +112,9 @@ export default defineComponent({
     logout: function () {
       this.$store.commit("update_kratos_user_id", "guest");
     },
+    toggleView: function() {
+      this.$store.commit("toggle_view" );
+    }
   },
   data() {
     return {

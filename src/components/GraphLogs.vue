@@ -1,5 +1,5 @@
 <template>
-  <div class="graph-logs-panel" @click="show_all = !show_all">
+  <div class="graph-logs-panel" @click="show_all = !show_all" v-if="!this.$store.state.mobileView">
     <text v-if="show_all" class="log-message" v-for="log in logs">{{ log.type }} : {{ log.message }}<br></text>
     <text v-else class="log-message">{{ logs[logs.length-1].type }} : {{ logs[logs.length-1].message }}<br></text>
   </div>

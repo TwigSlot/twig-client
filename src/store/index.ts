@@ -10,6 +10,7 @@ const store : any = new Vuex.Store ({
     state: {
         kratos_user_id: 'guest',
         selected_mode: 'move',
+        mobileView: false
     },
     mutations: {
         update_kratos_user_id(state, kratos_user_id){
@@ -17,6 +18,9 @@ const store : any = new Vuex.Store ({
         },
         update_selected_mode(state, new_mode){
             state.selected_mode = new_mode
+        },
+        toggle_view(state){
+            state.mobileView = !state.mobileView
         }
     }
 })

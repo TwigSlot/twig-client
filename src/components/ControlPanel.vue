@@ -1,5 +1,5 @@
 <template>
-    <div class="control-panel">
+    <div class="control-panel" v-if="!this.$store.state.mobileView">
         <div id="control-box">
             <button class="button is-light control-box-item" @click="$emit('home')">Center</button>
             <DropdownComponent @custom_change="changed_item" :dropdownItem="options"></DropdownComponent>
