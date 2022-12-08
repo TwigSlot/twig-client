@@ -11,7 +11,7 @@ const store : any = new Vuex.Store ({
         kratos_user_id: 'guest',
         selected_mode: 'move',
         mobileView: false,
-        showInfo: false,
+        showInfo: true,
         layout: 0
     },
     mutations: {
