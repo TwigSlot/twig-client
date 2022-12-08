@@ -1,5 +1,5 @@
 <template>
-  <div class="info-panel-outer" v-if="!this.$store.state.mobileView">
+  <div class="info-panel-outer" v-if="!this.$store.state.showInfo">
     <h1 class="title is-4">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
     <div class="control">
       <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name"
@@ -13,7 +13,7 @@
       <a target="_blank" :href="data_panel.link">
         <button class="button is-dark info-panel-item">Open</button>
       </a>
-      <button @click="hide_description = !hide_description" class="button info-panel-item">{{ hide_description ? "Show"
+      <button v-if="!this.$store.state.mobileView" @click="hide_description = !hide_description" class="button info-panel-item">{{ hide_description ? "Show"
       : "Hide"}} description</button>
       <text class="subtitle is-4 data-panel-item">{{ retrieval_status }}</text>
     </div>

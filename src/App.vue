@@ -156,4 +156,23 @@ body {
 .command {
   cursor: pointer
 }
+
+.list-item{
+  width: 100%;
+  background: white;
+  padding: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+}
+.list-title{
+  font-size: 2rem;
+}
+.list-description{
+  font-size: 2rem;
+}
+.list-layout{
+  height: 100%;
+  background: white;
+}
 </style>

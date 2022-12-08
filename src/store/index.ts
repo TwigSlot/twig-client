@@ -10,7 +10,9 @@ const store : any = new Vuex.Store ({
     state: {
         kratos_user_id: 'guest',
         selected_mode: 'move',
-        mobileView: false
+        mobileView: false,
+        showInfo: false,
+        layout: 0
     },
     mutations: {
         update_kratos_user_id(state, kratos_user_id){
@@ -21,7 +23,13 @@ const store : any = new Vuex.Store ({
         },
         toggle_view(state){
             state.mobileView = !state.mobileView
-        }
+        },
+        toggle_layout(state){
+            state.layout = (state.layout + 1) % 2;
+        },
+        toggle_info(state){
+            state.showInfo = !state.showInfo;
+        },
     }
 })
 export default store
