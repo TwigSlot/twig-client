@@ -146,7 +146,11 @@ export default defineComponent({
   mounted() {
     sdk.toSession().then(({ data }) => {
       this.session = data;
-      this.$store.commit("update_kratos_user_id", data.identity.id);
+      if(data == null || data.identity == null) {
+        this.$store.commit("update_kratos_user_id", "guest");
+      }else{
+        this.$store.commit("update_kratos_user_id", data.identity.id);
+      }
       sdk.createSelfServiceLogoutFlowUrlForBrowsers().then(({ data }) => {
         this.logoutUrl = data.logout_url;
       });
