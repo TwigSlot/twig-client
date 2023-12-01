@@ -44,6 +44,7 @@
             type="primary"
             size="small"
             @click="edit_project(scope.$index, scope.row)"
+            v-if="scope.row.owner.kratos_user_id == this.$store.state.kratos_user_id"
             >Edit</el-button
           >
           <el-button
@@ -51,6 +52,7 @@
             type="danger"
             size="small"
             @click="delete_project(scope.$index, scope.row)"
+            v-if="scope.row.owner.kratos_user_id == this.$store.state.kratos_user_id"
             >Delete</el-button
           >
         </template>

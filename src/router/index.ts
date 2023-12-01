@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import Graph from '../views/Graph.vue'
+import GraphLayout from '../views/GraphLayout.vue'
+import ListLayout from '../views/ListLayout.vue'
 import Explore from '../views/Explore.vue'
 import Profile from '../views/Profile.vue'
 import EditProject from '../views/EditProject.vue'
@@ -14,12 +15,17 @@ const routes = [
     {
         path: '/project',
         name: "Graph",
-        component: Graph
+        component: GraphLayout
     },
     {
         path: '/project/:id',
-        name: "Graph",
-        component: Graph
+        name: "GraphLayout",
+        component: GraphLayout
+    },
+    {
+        path: '/project/:id/list',
+        name: "List",
+        component: ListLayout,
     },
     {
         path: '/project-edit',

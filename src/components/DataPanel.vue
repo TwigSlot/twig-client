@@ -3,11 +3,13 @@
     <h1 class="title is-4">ID : {{ (data_panel.uid ? data_panel.uid : "Hover over a node") }}</h1>
     <div class="control">
       <input class="input is-hovered info-panel-item" type="text" placeholder="Name" :value="data_panel.name"
-        @focus="pauseKeyDown" @blur="handleBlur('name', $event)" />
+        @focus="pauseKeyDown" @blur="handleBlur('name', $event)" 
+        :disabled="this.$store.state.kratos_user_id == 'guest'"/>
     </div>
     <div class="control" :style="{marginBottom: '5px'}">
       <input class="input is-hovered info-panel-item" type="text" placeholder="URL" :value="data_panel.link"
-        @focus="pauseKeyDown" @blur="handleBlur('link', $event)" />
+        @focus="pauseKeyDown" @blur="handleBlur('link', $event)" 
+        :disabled="this.$store.state.kratos_user_id == 'guest'"/>
     </div>
     <div class="control">
       <a target="_blank" :href="data_panel.link">
@@ -19,7 +21,8 @@
     </div>
     <div class="control" :style="{marginTop: '10px'}" v-if="!hide_description">
       <textarea class="textarea" rows="5" cols="50" placeholder="Description" :value="data_panel.description"
-        @focus="pauseKeyDown" @blur="handleBlur('description', $event)"></textarea>
+        @focus="pauseKeyDown" @blur="handleBlur('description', $event)"
+        :disabled="this.$store.state.kratos_user_id == 'guest'"></textarea>
     </div>
   </div>
 </template>
@@ -128,6 +131,13 @@ export default defineComponent({
         }
         retrieval_status.value = "Saved!"
         this.$emit('add_log', 'DataPanel', 'saved')
+        setTimeout(() => {
+          retrieval_status.value = ""
+        }, 1000)
+      }).catch((err) => {
+        console.log(err);
+        retrieval_status.value = "Error!"
+        this.$emit('add_log', 'DataPanel', 'error')
         setTimeout(() => {
           retrieval_status.value = ""
         }, 1000)

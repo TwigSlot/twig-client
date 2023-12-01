@@ -40,7 +40,8 @@
                             Tag Name:
                             <input class="input is-hovered info-panel-item" type="text" placeholder="Tag Name"
                                 v-model="tag_name" @change="update_tag_name" @focus="pauseKeyDown" @blur="handleBlur()"
-                                autocomplete="on" list="autocomplete_tags" />
+                                autocomplete="on" list="autocomplete_tags" 
+                                :disabled="this.$store.state.kratos_user_id == 'guest'"/>
                         </div>
                         <datalist id="autocomplete_tags">
                             <option v-for="tag in tags_suggestions_list" :value="(tag as any).name">{{`uid: (${(tag as
@@ -49,7 +50,7 @@
                         <input class="button is-primary" type="button" value="Color Graph" @click="color_all_nodes" />
                         <input class="button is-primary" type="button" value="Plain Graph" @click="plain_graph" />
                         <input class="button is-primary" type="button" :value="add_tag_button" @click="batch_add_tag()"
-                            :disabled="disable_add" />
+                            :disabled="disable_add || this.$store.state.kratos_user_id == 'guest'" />
                         <input class="button is-primary" type="button" value="List ALL Tags in Project"
                             @click="list_all_tags(true)" />
                     </div>
@@ -60,7 +61,8 @@
                     Node Size:
                 </h1>
                 <div class="slider-demo-block">
-                    <el-slider style="width: 10rem" v-model="data_panel.size" @change="node_size_change"/>
+                    <el-slider style="width: 10rem" v-model="data_panel.size" @change="node_size_change"
+                    :disabled="this.$store.state.kratos_user_id == 'guest'"/>
                 </div>
             </div>
         </div>

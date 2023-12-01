@@ -3,10 +3,14 @@
     <div class="navbar-brand">
       <a class="navbar-item" href="/"> TWIGSLOT </a>
 
-      <a class="navbar-item" :style="{ marginLeft: '10px' }" @click="toggleLayout">
+      <!-- <router-link :to="{ name: 'GraphLayout', id: }">
+        Graph
+      </router-link> -->
+      <!-- <a class="navbar-item" :style="{ marginLeft: '10px' }" @click="toggleLayout">
         <text v-if="this.$store.state.layout == 0"> Graph </text>
         <text v-if="this.$store.state.layout == 1"> List </text>
-      </a>
+
+      </a> -->
       <a class="navbar-item" :style="{ marginLeft: '10px' }" @click="toggleInfo"
          v-if="this.$store.state.mobileView && this.$store.state.layout == 0"
       >
