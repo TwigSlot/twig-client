@@ -9,11 +9,14 @@
         Graph
       </router-link>
 
-      <router-link :to="{ name: 'ListLayout', 
-      params: {id: this.$store.state.project_id ? this.$store.state.project_id : '0' } }"
-      class="navbar-item">
+      <!-- <router-link :to="{ name: 'ListLayout', 
+      params: {id: this.$store.state.project_id ? this.$store.state.project_id : '0' }}"
+      class="navbar-item"> -->
+      <a class="navbar-item" 
+      :href="'/project/' + `${this.$store.state.project_id ? this.$store.state.project_id : '0'}` + '/list'">
         List 
-      </router-link>
+      </a>
+      <!-- </router-link> -->
       <!-- <a class="navbar-item" :style="{ marginLeft: '10px' }" @click="toggleLayout">
         <text v-if="this.$store.state.layout == 0"> Graph </text>
         <text v-if="this.$store.state.layout == 1"> List </text>
@@ -105,10 +108,6 @@
   margin-top: 10px;
 }
 
-.list-item {
-  padding-top: 10px;
-}
-
 nav {
   font-family: "Noto Sans", sans-serif;
 }
@@ -143,8 +142,7 @@ export default defineComponent({
     },
     toggleInfo: function(){
       this.$store.commit("toggle_info")
-    }
-
+    },
   },
   data() {
     return {

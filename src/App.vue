@@ -160,7 +160,7 @@ body {
 .list-item{
   width: 100%;
   background: white;
-  padding: 1rem;
+  /* padding: 1rem; */
   margin-left: 1rem;
   margin-right: 1rem;
   margin-top: 1rem;
@@ -174,5 +174,23 @@ body {
 .list-layout{
   height: 100%;
   background: white;
+}
+.list-editable{
+  left: 0;
+  width: 45%;
+  background: white;
+  padding: 0.5rem;
+}
+.list-sidebyside{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.list-markdown{
+  position: absolute;
+  right: 1rem;
+  width: 50%;
+  background: white;
+  padding: 0.5rem;
 }
 </style>

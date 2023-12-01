@@ -13,10 +13,17 @@ import router from "./router"
 import 'bulma/css/bulma.css'
 import store from './store'
 
+import 'katex/dist/katex.min.css';
+import VueKatex from '@hsorby/vue3-katex';
+
 library.add(faGithub)
 
 const app = createApp(App)
 app.use(VNetworkGraph)
+app.use(VueKatex, {
+    globalOptions: {
+    }
+})
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.use(ElementPlus)

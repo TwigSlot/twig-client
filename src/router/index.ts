@@ -28,6 +28,11 @@ const routes = [
         component: ListLayout,
     },
     {
+        path: '/project/:id/list/:resource_id',
+        name: "FocusListLayout",
+        component: ListLayout,
+    },
+    {
         path: '/project-edit',
         name: 'EditProject',
         component: EditProject,
