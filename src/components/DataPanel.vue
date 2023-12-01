@@ -96,17 +96,17 @@ export default defineComponent({
           `${import.meta.env.VITE_AUTOFILL_URL}` + `/?url=${new_value}`;
         var name = "",
           link = "",
-          description = "";
+          description = this.$props.data_panel.description;
         try {
           retrieval_status.value = "Retrieving website info..."
           const response = await axios.get(autofill_request_url);
           name = response.data.title;
           link = response.data.url;
-          description = response.data.summary;
+          description += response.data.summary;
         } catch (err) {
           name = `${new_value}`;
           link = new_value;
-          description = `description for ${new_value}`;
+          description += `\n\ndescription for ${new_value}`;
         }
         const nameLengthLimit = 100;
         name =

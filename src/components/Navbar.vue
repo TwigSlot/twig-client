@@ -3,9 +3,17 @@
     <div class="navbar-brand">
       <a class="navbar-item" href="/"> TWIGSLOT </a>
 
-      <!-- <router-link :to="{ name: 'GraphLayout', id: }">
+      <router-link :to="{ name: 'GraphLayout', 
+      params: {id: this.$store.state.project_id ? this.$store.state.project_id : '0' } }"
+      class="navbar-item">
         Graph
-      </router-link> -->
+      </router-link>
+
+      <router-link :to="{ name: 'ListLayout', 
+      params: {id: this.$store.state.project_id ? this.$store.state.project_id : '0' } }"
+      class="navbar-item">
+        List 
+      </router-link>
       <!-- <a class="navbar-item" :style="{ marginLeft: '10px' }" @click="toggleLayout">
         <text v-if="this.$store.state.layout == 0"> Graph </text>
         <text v-if="this.$store.state.layout == 1"> List </text>

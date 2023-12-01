@@ -14,7 +14,7 @@ const routes = [
     },
     {
         path: '/project',
-        name: "Graph",
+        name: "GraphBlank",
         component: GraphLayout
     },
     {
@@ -24,7 +24,7 @@ const routes = [
     },
     {
         path: '/project/:id/list',
-        name: "List",
+        name: "ListLayout",
         component: ListLayout,
     },
     {

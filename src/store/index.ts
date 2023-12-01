@@ -12,7 +12,8 @@ const store : any = new Vuex.Store ({
         selected_mode: 'move',
         mobileView: false,
         showInfo: true,
-        layout: 0
+        layout: 0,
+        project_id: '0',
     },
     mutations: {
         update_kratos_user_id(state, kratos_user_id){
@@ -30,6 +31,9 @@ const store : any = new Vuex.Store ({
         toggle_info(state){
             state.showInfo = !state.showInfo;
         },
+        update_project_id(state, project_id){
+            state.project_id = project_id;
+        }
     }
 })
 export default store

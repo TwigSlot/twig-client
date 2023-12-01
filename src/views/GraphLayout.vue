@@ -313,6 +313,7 @@ export default defineComponent({
   mounted() {
     axios.defaults.headers.common['X-User'] = this.$store.state.kratos_user_id
     project_id.value = this.$route.params.id
+    this.$store.commit('update_project_id', project_id.value)
     get_items()
   },
   beforeUnmount() {
